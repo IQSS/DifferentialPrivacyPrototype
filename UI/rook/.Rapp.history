@@ -1,0 +1,345 @@
+is.na(up)
+up <- 2/0
+is.na(up)
+up <- NA
+is.na(up)
+up !=" "
+nrow(toprocess)
+col <- 5
+head(toprocess)
+up <- 82
+toprocess[ , col][toprocess[ , col] > up] <- up
+toprocess
+head(toprocess)
+practicedf
+up<- 1000000
+lo <- 0
+gran <- 100
+gr <- 100
+enforce_gran <- function(x, gran = gr, lower = lo, upper = up){#
+					if(x == lower){#
+						return(x)#
+					}#
+					# which gets precedence? upper or lower bound?#
+					else{#
+						tick <- round((x - lower)/gran)#
+						toreturn <- lower + gran*tick#
+						if(toreturn > upper){#
+							return(toreturn - gran)#
+						}#
+						else{#
+							return(toreturn)#
+						}#
+					}#
+				}
+head(toprocess)
+col <- 7
+toprocess[ , col] <- sapply(toprocess[ , col], FUN = enforce_gran)
+head(toprocess)
+lo <- 5000
+enforce_gran <- function(x, gran = gr, lower = lo, upper = up){#
+					if(x == lower){#
+						return(x)#
+					}#
+					# which gets precedence? upper or lower bound?#
+					else{#
+						tick <- round((x - lower)/gran)#
+						toreturn <- lower + gran*tick#
+						if(toreturn > upper){#
+							return(toreturn - gran)#
+						}#
+						else{#
+							return(toreturn)#
+						}#
+					}#
+				}
+toprocess[ , col] <- sapply(toprocess[ , col], FUN = enforce_gran)
+head(toprocess)
+lo <- 0
+enforce_gran <- function(x, gran = gr, lower = lo, upper = up){#
+					if(x == lower){#
+						return(x)#
+					}#
+					# which gets precedence? upper or lower bound?#
+					else{#
+						tick <- round((x - lower)/gran)#
+						toreturn <- lower + gran*tick#
+						if(toreturn > upper){#
+							return(toreturn - gran)#
+						}#
+						else{#
+							return(toreturn)#
+						}#
+					}#
+				}
+head(toprocess)
+toprocess[2,col] <- 4840
+head(toprocess)
+toprocess[ , col] <- sapply(toprocess[ , col], FUN = enforce_gran)
+head(toprocess)
+system.time
+system.time()
+?system.time()
+system.time(enforce_constraints(data,practicedf))
+globals <- list("eps"=.1,"del"=.0000001,"Beta"=.05,"n"=nrow(data))
+system.time(enforce_constraints(calculate_stats(data,practicedf,globals)))
+system.time(enforce_constraints(calculate_stats(data,practicedf,globals)))
+system.time(enforce_constraints(calculate_stats(data,practicedf,globals,c())))
+practicedf
+system.time(calculate_stats(data,practicedf,globals,c()))
+globals
+round(100/100)
+round(90/100)
+system.time(calculate_stats(data,practicedf,globals,c()))
+source("../../dpmodules/Jack/Calculate_stats.R")
+system.time(calculate_stats(data,practicedf,globals,c()))
+source("../../dpmodules/Jack/Calculate_stats.R")
+system.time(calculate_stats(data,practicedf,globals,c()))
+source("../../dpmodules/Jack/Calculate_stats.R")
+system.time(calculate_stats(data,practicedf,globals,c()))
+source("../../dpmodules/Jack/Calculate_stats.R")
+system.time(calculate_stats(data,practicedf,globals,c()))
+source("../../dpmodules/Jack/Calculate_stats.R")
+system.time(calculate_stats(data,practicedf,globals,c()))
+head(toprocess)
+is.na(practicedf$UpperBound[1])
+practicedf$UpperBound[1]
+up <-  practicedf$UpperBound[1]
+is.na(up)
+up
+up!="na"
+source("../../dpmodules/Jack/Calculate_stats.R")
+system.time(calculate_stats(data,practicedf,globals,c()))
+source("../../dpmodules/Jack/Calculate_stats.R")
+system.time(calculate_stats(data,practicedf,globals,c()))
+up <- 100
+head(toprocess)
+max(toprocess$age)
+up <- 100
+length(toprocess[ , col][toprocess[ , col]>up)
+length(toprocess[ , col][toprocess[ , col]>up]
+]
+length(toprocess[ , col][toprocess[ , col]>up])
+col
+col <- 5
+length(toprocess[ , col][toprocess[ , col]>up])
+lo <- 0
+length(toprocess[ , col][toprocess[ , col]<lo])
+toprocess[ , col][toprocess[ , col]>up] <- up
+head(toprocess)
+toprocess[ , col][toprocess[ , col]<lo] <- lo
+head(toprocess)
+source("../../dpmodules/Jack/Calculate_stats.R")
+system.time(calculate_stats(data,practicedf,globals,c()))
+as.numeric(100)
+up
+up <- practicedf$UpperBound[1]
+up
+up <- practicedf$UpperBound[2]
+up
+as.numeric(up)
+up[1]
+up + 6
+as.numeric(levels(up))[up]
+as.numeric(as.character(up))
+source("../../dpmodules/Jack/Calculate_stats.R")
+system.time(calculate_stats(data,practicedf,globals,c()))
+source("../../dpmodules/Jack/Calculate_stats.R")
+system.time(calculate_stats(data,practicedf,globals,c()))
+?with
+head(toprocess)
+toprocess$age<- with(toprocess$age,{min(age,80)})
+toprocess$age<- with(toprocess$age,{age <-min(age,80)})
+toprocess$age<- with(toprocess$age,age <-min(age,80))
+toprocess$age<- with(toprocess$age,expr=age <-min(age,80))
+toprocess$age<- with(toprocess$age,expr={age <-min(age,80)})
+toprocess$age<- within(toprocess$age,age <- min(age,80))
+head(toprocess$age)
+head( within(toprocess,age <- min(age,80)) )
+head(toprocess)
+age
+head( within(toprocess,age <- age+1) )
+head( within(toprocess,age <- min(80,age)) )
+gr <- 1
+lo <- 0
+up <- 80
+enforce_gran <- function(x, gran = gr, lower = lo, upper = up){#
+					if(x == lower){#
+						return(x)#
+					}#
+					# which gets precedence? upper or lower bound?#
+					else{#
+						tick <- round((x - lower)/gran)#
+						toreturn <- lower + gran*tick#
+						if(toreturn > upper){#
+							return(toreturn - gran)#
+						}#
+						else{#
+							return(toreturn)#
+						}#
+					}#
+				}
+head( within(toprocess,enforce_gran(age)) )
+samp <-sample(toprocess$age,100)
+samp
+enforce_gran
+gr <- 2
+sapply(samp,FUN=enforce_gran)
+round(.6)
+round(.4)
+round(.5)
+round(.50000000001)
+up<- 43
+toprocess[ , col][toprocess[ , col] > up] <- up
+head(toprocess)
+gran <- 2
+lo <- min(samp)
+gran*round((samp-lower)/gran)+lower
+lower <- min(samp)
+gran*round((samp-lower)/gran)+lower
+lower
+samp
+lo
+lower
+gran
+gr
+samp
+sapply(samp,FUN=enforce_gran)
+gran*round((samp-lower)/gran)+lower
+sapply(samp,FUN=enforce_gran) - gran*round((samp-lower)/gran)+lower
+a <- sapply(samp,FUN=enforce_gran)
+b <- gran*round((samp-lower)/gran)+lower
+a-b
+up
+samp > 43
+enforce_gran
+up <- 100
+function(x, gran = gr, lower = lo, upper = up){#
+					if(x == lower){#
+						return(x)#
+					}#
+					# which gets precedence? upper or lower bound?#
+					else{#
+						tick <- round((x - lower)/gran)#
+						toreturn <- lower + gran*tick#
+						if(toreturn > upper){#
+							return(toreturn - gran)#
+						}#
+						else{#
+							return(toreturn)#
+						}#
+					}#
+				}
+a <- sapply(samp,FUN=enforce_gran)
+b <- gran*round((samp-lower)/gran)+lower
+a-b
+trunc(3.2)
+samp
+up <- 65
+newup <- trunc((up-lo)/gr)*gr + lo
+newup
+lo
+lo <- 12.2
+newup <- trunc((up-lo)/gr)*gr + lo
+newup
+head(toprocess)
+toprocess <- data
+head(toprocess)
+gr <- 2.5
+lo <- 18
+max(toprocess$age)
+up <- 80
+toprocess[ , col][toprocess[ , col] > up] <- up
+head(toprocess)
+enforce_constraints
+enforce_gran
+function(x, gran = gr, lower = lo, upper = up){#
+					if(x == lower){#
+						return(x)#
+					}#
+					# which gets precedence? upper or lower bound?#
+					else{#
+						tick <- round((x - lower)/gran)#
+						toreturn <- lower + gran*tick#
+						if(toreturn > upper){#
+							return(toreturn - gran)#
+						}#
+						else{#
+							return(toreturn)#
+						}#
+					}#
+				}
+system.time(sapply(toprocess,FUN=enforce_gran))
+toprocess <- data
+system.time(sapply(toprocess$age,FUN=enforce_gran))
+head(toprocess)
+system.time(head(sapply(toprocess$age,FUN=enforce_gran)))
+system.time(sapply(toprocess$age,FUN=enforce_gran)
+head(toprocess))
+system.time(toprocess$age <- sapply(toprocess$age,FUN=enforce_gran))
+head(toprocess)
+toprocess <- data
+system.time(toprocess[ , col] <- gr*round((toprocess[,col]-lo)/gr)+lo#
+				newup <- trunc((up-lo)/gr)*gr + lo#
+				toprocess[ , col][toprocess[ , col] > newup] <- newup)
+system.time(toprocess[ , col] <- gr*round((toprocess[,col]-lo)/gr)+lo)
+system.time(newup <- trunc((up-lo)/gr)*gr + lo)
+system.time(toprocess[ , col][toprocess[ , col] > newup] <- newup#
+)
+head(toprocess)
+a <- data
+b <- data
+a$age <- sapply(a$age,FUN=enforce_gran)
+head(a)
+toprocess <- data
+toprocess[ , col] <- gr*round((toprocess[,col]-lo)/gr)+lo#
+				newup <- trunc((up-lo)/gr)*gr + lo#
+				toprocess[ , col][toprocess[ , col] > newup] <- newup
+head(toprocess)
+gr
+up
+del
+del <- .0000001
+d <- 1 - (1-del)^(1/(2*k))
+k <-8
+d <- 1 - (1-del)^(1/(2*k))
+e <- .0125
+max(toprocess$age)
+min(toprocess$age)
+ComputeMean(e, d, toprocess$age, 60)
+range <- 60
+cdfstep <- round(range/100)
+gr
+head(toprocess$age)
+computeCDF(e, cdfstep, toprocess$age, c(lo, up), gr)
+source("../../dpmodules/DP_Quantiles.R")
+computeCDF(e, cdfstep, toprocess$age, c(lo, up), gr)
+lo
+up
+gr
+toprocess$age
+up
+lo
+gr
+max(toprocess$age)
+min(toprocess$age)
+cdfstep
+80-18
+e
+computeCDF(e, cdfstep, toprocess$age, c(lo, up), gr)
+computeCDF(e, 2, toprocess$age, c(lo, up), gr)
+source("rookPrivate.R")
+mean(toprocess$income)
+computeCDF(.0125, cdfstep, toprocess$age, c(min(toprocess$age), max(toprocess$age)), 1)
+computeCDF(.0125, 2, toprocess$age, c(min(toprocess$age), max(toprocess$age)), 1)
+head(toprocess$age)
+min(toprocess$age)
+unique(toprocess$age)
+sort(unique(toprocess$age))
+computeCDF(.0125, 1, toprocess$age, c(min(toprocess$age), max(toprocess$age)), 2.5)
+computeCDF(.0125, 2.5, toprocess$age, c(min(toprocess$age), max(toprocess$age)), 2.5)
+computeCDF(.0125, .5, toprocess$age, c(min(toprocess$age), max(toprocess$age)), 2.5)
+4.8/.6
+source("rookPrivate.R")
+source("rookrestart.R")
+source("rookrestart.R")
