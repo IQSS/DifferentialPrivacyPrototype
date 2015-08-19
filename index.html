@@ -1,1 +1,95 @@
-Test Index Page
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Differentially Private Curator</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+  <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+
+<style>
+.jumbotron {
+    margin-bottom: 0px;
+    background-image: url(./UI/images/dpe.png);
+    background-position: 0% 25%;
+    color: #3A5FCD;
+    background-size: 25% 100%;
+    height: 25%;
+    text-shadow: #383838 0.3em 0.3em 0.3em;
+}
+</style>
+<!--    background-size: cover;
+    background-repeat: no-repeat;-->
+
+
+</head>
+<body>
+
+<div class="container">
+  <div class="jumbotron">
+    <h1>Privacy Tools</h1> 
+    <h2 style="text-shadow:#707070 0.3em 0.3em 0.3em;">Differentially Private Statistical Exploration</h2>
+    <p  style="color:black;">A National Science Foundation Secure and Trustworthy Cyberspace Project</p> 
+  </div>
+
+  <p>
+	This system will allow researchers with sensitive datasets to make differentially private statistics about their data available through data repositories using the Dataverse platform.
+  </p>
+
+  <div class="row">
+    <div class="col-sm-4">
+      <h3>Budget Tool</h3>
+      <p>The first part of this system is a tool that helps both data depositors and data analysts distribute a global privacy budget across many statistics. Users select which statistics they would like to calculate and are given estimates of how accurately each statistic can be computed. They can also redistribute their privacy budget according to which statistics they think are most valuable in their dataset. This work has motivated new theoretical results from our group that maximize the utility achievable when using differential privacy to share many statistics about a research dataset.</p>
+      <p class="text-center">
+		<a href="http://iqss.github.io/PrivateZelig/UI/code/interface.html" class="btn btn-info" role="button">Explore Budget Tool Demo</a>
+	  </p>
+    </div>
+    <div class="col-sm-4">
+      <h3>Curator Interface</h3>
+      <p>When the data depositor has distributed their privacy budget, the second portion of our tool system draws differentially private versions of those statistical summaries selected by the data depositor from a library of differentially private routines (which we created in the R statistical language, and also make available for use by the R community) and stores them in metadata associated with that file on Dataverse.  Future researchers who wish to explore restricted social science data can then access these privacy-preserving summary statistics either from the metadata, or through the TwoRavens graphical data exploration tool built for Dataverse, which we have adapted for differentially private statistics.</p>
+      <p class="text-center">
+		<a href="#" class="btn btn-info" role="button">Explore TwoRavens Interface Demo</a>
+	  </p>
+    </div>
+    <div class="col-sm-4">
+      <h3>Interactive Queries</h3>        
+      <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit...</p>
+      <p>Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris...</p>
+      <p class="text-center">
+		<a href="#" class="btn btn-info" role="button">Explore Interactive Queries Demo</a>
+	  </p>
+    </div>
+  </div>
+
+</body>
+
+<p>
+Something Here
+</p>
+
+<footer>
+                <div class="row">
+
+                    <div style="float: right;">
+                        <a href="https://www.iq.harvard.edu"><img src="./UI/images/iqss-logo.png" alt="In Partnership with IQSS" height="50" style="PADDING-RIGHT: 15px"></a>
+                    </div>
+                    <div style="float: right;">
+                        <a href="http://dataverse.org"><img src="./UI/images/dataverse_project_logo.png" alt="Data Archived by Dataverse" height="50" style="PADDING-RIGHT: 15px"></a>
+                    </div>
+                    <div style="float: right;">
+                        <a href="https://datascience.iq.harvard.edu/about-tworavens"><img src="./UI/images/TwoRavens.png" alt="Analysis with TwoRavens" height="40" style="PADDING-RIGHT: 15px"></a>
+                    </div>
+                    <div style="float: right;">
+                        <a href="http://crcs.seas.harvard.edu"><img src="./UI/images/crcslogo_full_redname_03.png" alt="Built by CRCS" height="40" style="PADDING-RIGHT: 15px"></a>
+                    </div>
+
+                </div>
+ </footer>
+
+
+
+
+</html>
+
+
