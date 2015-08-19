@@ -531,7 +531,7 @@ function undo() {
     console.log(dataname);
     console.log(typeMap)
     // Put dataset name, from meta-data, into header
-    d3.select("#datasetName").selectAll("h2")
+    d3.select("#datasetName").selectAll("h3")
     .html(dataname);
 
   var columns = [
