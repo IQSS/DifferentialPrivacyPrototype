@@ -1,25 +1,11 @@
 ##
-##  rookDiffPriv
+##  rookPrivate
 ##
-##  Rook app for calling differential privacy modules and updating accuracy table on ingest of private data
+##  Rook apps for calling differential privacy modules and updating accuracy table on ingest of private data
 ##
-##  12/11/14 jH
+##  8/19/15 jH
 ##
 
-production<-FALSE     ## Toggle:  TRUE - Production, FALSE - Local Development
-
-packageList<-c("Rook","jsonlite") #,"rjson")
-for(i in 1:length(packageList)){
-    if (!require(packageList[i],character.only = TRUE)){
-        install.packages(packageList[i], repos="http://lib.stat.cmu.edu/R/CRAN/")
-    }
-}
-
-#update.packages(ask = FALSE, dependencies = c('Suggests'), oldPkgs=packageList, repos="http://lib.stat.cmu.edu/R/CRAN/")
-
-
-library(Rook)
-library(jsonlite)
 
 modulesPath<-("../../dpModules/Jack/")
 
@@ -33,41 +19,6 @@ source(paste(modulesPath,"DP_Quantiles.R", sep=""))
 source(paste(modulesPath,"DP_Means.R", sep=""))
 source(paste(modulesPath,"CreateXML.R", sep=""))
 
-
-# Temporary! will need to get the dataset from Dataverse itself.
-#data <- read.csv("../../data/PUMS5extract.csv")
-#n <- nrow(data)
-
-
-
-
-## Get the server connection set up
-
-if(!production){
-    myPort <- "8000"
-    myInterface <- "0.0.0.0"
-    #myInterface <- "127.0.0.1"
-    #myInterface <- "140.247.0.42"
-    status <- -1
-    status<-.Call(tools:::startHTTPD, myInterface, myPort)
-    
-    
-    if( status!=0 ){
-        print("WARNING: Error setting interface or port")
-        stop()
-    }
-    
-    R.server <- Rhttpd$new()
-    
-    cat("Type:", typeof(R.server), "Class:", class(R.server))
-    R.server$add(app = File$new(getwd()), name = "pic_dir")
-    print(R.server)
-    
-    R.server$start(listen=myInterface, port=myPort)
-    R.server$listenAddr <- myInterface
-    R.server$listenPort <- myPort
-    
-}
 
 
 privateStatistics.app <-function(env){
@@ -302,14 +253,5 @@ privateAccuracies.app <- function(env){
     response$finish()   
 }
 
-if(!production){
-    R.server$add(app = privateAccuracies.app, name = "privateAccuracies")
-    R.server$add(app = privateStatistics.app, name = "privateStatistics")
-    print(R.server)
-}
 
 
-# Other useful commands (see also "myrookrestart.R"):
-#R.server$browse("myrookapp")
-#R.server$stop()
-#R.server$remove(all=TRUE)
