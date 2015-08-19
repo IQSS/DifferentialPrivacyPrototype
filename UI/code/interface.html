@@ -6,6 +6,9 @@
   <link rel="stylesheet" href="../lib/slick.grid.css" type="text/css"/>
   <link rel="stylesheet" href="../css/smoothness/jquery-ui-1.8.16.custom.css" type="text/css"/>
   <link rel="stylesheet" href="examples.css" type="text/css"/>
+  <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+  <script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+
   <style>
     .cell-title {
       font-weight: bold;
@@ -23,13 +26,16 @@
 </head>
 <body>
 <div id="datasetName" style="text-align:center;margin-top:1em">
-  <h2 style="display:inline;">Dataset Name</h2>
+  <h3 style="display:inline;">Dataset Name</h3>
 </div>
 <div style="position:relative; margin-top: 25px;" align="center">
   <div style="width:880px;" align="center">
     <div id="myGrid" style="width:890px;height:300px;"></div>
+
+<div class="col-xs-12" style="height:15px;"></div>
 <p align="right">
-<button type="button" title="Calculate statistics with current settings" onclick="submit();" >Submit</button>
+<!--<button type="button" title="Calculate statistics with current settings" onclick="submit();" >Submit</button>-->
+    <a href="http://iqss.github.io/PrivateZelig/UI/code/aftersubmit.html" class="btn btn-warning"  role="button">Submit</a>
 </p>
   </div>
 
