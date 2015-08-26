@@ -288,7 +288,7 @@ function talktoR(btn, df, x, y, globals) {
   		globals["del"] = globals["del"]*(big_n/n)
   	}
   	var jsonout = JSON.stringify({ df: df, fileid: fileid, globals: globals});  // Make this a local reference eventually
-    urlcall = base+"privateStatistics";
+    urlcall = base+"privateStatisticsapp";
     console.log("urlcall out: ", urlcall);
   
     makeCorsRequest(urlcall,btn, statisticsSuccess, estimateFail, jsonout);
@@ -303,7 +303,7 @@ function talktoR(btn, df, x, y, globals) {
   	}
   	var jsonout = JSON.stringify({ df: df, x: x, y: y, btn:btn, globals:globals});
   	console.log(jsonout)
-    urlcall = base+"privateAccuracies";
+    urlcall = base+"privateAccuraciesapp";
     console.log("urlcall out: ", urlcall);
     allResults = [];
     makeCorsRequest(urlcall,btn, estimateSuccess, estimateFail, jsonout);
