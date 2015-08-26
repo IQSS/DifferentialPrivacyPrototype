@@ -2,14 +2,14 @@
 // Globals
 
 
-var production=false;
+var production=true;
 var fixeddataset=true;
 var fileid="";
 var hostname="";
 var dataurl="";
 
 if(production && fixeddatset){
-	fileid = "500";  // PUMS n=2000 subset on Dataverse-demo
+	fileid = "23";  // PUMS n=2000 subset on beta.dataverse.org
 } 
 
 if(production && fileid=="") {
@@ -20,7 +20,7 @@ if(production && fileid=="") {
 if (!hostname && !production) {
        hostname="localhost:8080";
 } else if (!hostname && production) {
-    hostname="dataverse-demo.iq.harvard.edu"; //this will change when/if the production host changes
+    hostname="beta.dataverse.org"; //this will change when/if the production host changes
 }
 
 if (fileid && !dataurl) {
@@ -29,7 +29,7 @@ if (fileid && !dataurl) {
     // with the fileid supplied and the hostname we have
     // either supplied or configured:
     dataurl = "https://"+hostname+"/api/access/datafile/"+fileid;
-    dataurl = dataurl+"?key="+apikey;
+    //dataurl = dataurl+"?key="+apikey;
     // (it is also possible to supply dataurl to the script directly, 
     // as an argument -- L.A.)
 }
@@ -38,7 +38,7 @@ if (!production) {
     // base URL for the R apps:
     var rappURL = "http://0.0.0.0:8000/custom/";
 } else {
-    var rappURL = "https://dataverse-demo.iq.harvard.edu/custom/"; //this will change when/if the production host changes
+    var rappURL = "https://beta.dataverse.org/custom/"; //this will change when/if the production host changes
 }
 
 
