@@ -8,7 +8,7 @@ var fileid="";
 var hostname="";
 var dataurl="";
 
-if(production && fixeddatset){
+if(production && fixeddataset){
 	fileid = "23";  // PUMS n=2000 subset on beta.dataverse.org
 } 
 
