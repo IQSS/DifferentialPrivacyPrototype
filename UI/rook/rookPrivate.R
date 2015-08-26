@@ -7,9 +7,9 @@
 ##
 
 
-modulesPath<-("../../dpModules/Jack/")
+modulesPath<-paste(getwd(),"/dpModules/Jack/",sep="")
 
-source(paste(modulesPath,"DPutilities.R", sep=""))
+source(paste(modulesPath,"DPUtilities.R", sep=""))
 source(paste(modulesPath,"GetFunctions.R", sep=""))
 source(paste(modulesPath,"update_parameters.R", sep=""))
 source(paste(modulesPath,"Calculate_stats.R", sep=""))
