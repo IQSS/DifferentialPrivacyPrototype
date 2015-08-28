@@ -370,7 +370,7 @@ function makeCorsRequest(url,btn,callback, warningcallback, jsonout) {
     };
     console.log("sending")
     var jsonstring = "tableJSON="+jsonout;
-    console.log(json);
+    console.log(jsonstring);
     xhr.send(jsonstring);   
 }
 
