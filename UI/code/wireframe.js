@@ -332,7 +332,7 @@ function createCORSRequest(method, url, callback) {
 
 
 // Make the actual CORS request.
-function makeCorsRequest(url,btn,callback, warningcallback, json) {
+function makeCorsRequest(url,btn,callback, warningcallback, jsonout) {
     var xhr = createCORSRequest('POST', url);
     if (!xhr) {
         alert('CORS not supported');
@@ -369,8 +369,9 @@ function makeCorsRequest(url,btn,callback, warningcallback, json) {
         console.log(xhr);
     };
     console.log("sending")
+    var jsonstring = "tableJSON="+jsonout;
     console.log(json);
-    xhr.send("tableJSON="+json);   
+    xhr.send(jsonstring);   
 }
 
 function getGlobalParameters(){
