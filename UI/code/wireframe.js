@@ -375,11 +375,13 @@ function makeCorsRequest(url,btn,callback, warningcallback, jsonout) {
     xhr.send(jsonstring);   
 }
 
+// global n value. Gets read once and never edited. Default of 1000. 
+var nval = 1000;
 function getGlobalParameters(){
 	var epsval=document.getElementById("epsilonbox").value;
 	var delval=document.getElementById("deltabox").value;
 	var betaval=document.getElementById("betabox").value;
-	var nval = 1223992 //Need to get this from metadata too 
+	//var nval = 1223992 //Need to get this from metadata too 
 	var globals={eps:epsval, del:delval, beta:betaval, n:nval};
 	return globals;
 	
@@ -528,15 +530,22 @@ function undo() {
     // dataset name trimmed to 12 chars
     var temp = xml.documentElement.getElementsByTagName("fileName");
     var dataname = temp[0].childNodes[0].nodeValue.replace( /\.(.*)/, "") ;  // regular expression to drop any file extension 
+    // read n from metadata file
+	var temp2 = xml.documentElement.getElementsByTagName("caseQnty");
+	nval = temp2[0].childNodes[0].nodeValue.replace( /\.(.*)/, "") ;
+	
     console.log("metadata query output");
     console.log(Variables);
     console.log(dataname);
-    console.log(typeMap)
+    console.log(typeMap);
+    console.log(nval)
     // Put dataset name, from meta-data, into header
     d3.select("#datasetName").selectAll("h3")
     .html(dataname);
 
-  var columns = [
+	
+	
+    var columns = [
     {id: "delCol", name: "", field: "del", width: 40, minWidth:40, maxWidth: 40, formatter:deleteFormatter},
     {id: "Variable", name: "Variable", field: "Variable", width: 100, minWidth: 100, maxWidth:100, validator: requiredFieldValidator, options: Variables, toolTip:"Variable from the dataset on which to compute a statistic.", editor: Slick.Editors.SelectOption},
     {id: "Type", name: "Type", field: "Type", width: 100, minWidth:100, maxWidth: 100, options:["Numerical","Categorical", "Boolean"], toolTip:"Select numerical if data are numbers (e.g. age), categorical if data fall into distinct groups (e.g. multiple choice questions), and boolean if data only fall into two groups (e.g. yes or no questions).", editor: Slick.Editors.SelectOption},
