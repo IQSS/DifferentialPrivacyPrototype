@@ -327,6 +327,8 @@ function createCORSRequest(method, url, callback) {
         // CORS not supported.
         xhr = null;
     }
+
+    xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
     return xhr;  
 }
 
@@ -368,9 +370,8 @@ function makeCorsRequest(url,btn,callback, warningcallback, jsonout) {
         }
         console.log(xhr);
     };
-    console.log("sending")
     var jsonstring = "tableJSON="+jsonout;
-    console.log(jsonstring);
+    console.log("POST: ", jsonstring);
     xhr.send(jsonstring);   
 }
 
