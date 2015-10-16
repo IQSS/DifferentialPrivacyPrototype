@@ -740,6 +740,8 @@ grid.onCellChange.subscribe(function (e, args){
    
    		cell = args.cell
    		row = args.row
+   		 console.log(row);
+   		  console.log("here");
    		rowComplete = CompleteRow(row)
    		if(!data[row].Variable && grid.getColumns()[cell].id !== "Variable"){
    			return false;
@@ -761,7 +763,6 @@ grid.onCellChange.subscribe(function (e, args){
    });
    
       grid.onClick.subscribe(function (e) {
-     
       var cell = grid.getCellFromEvent(e);
       row = cell.row;
       current_col = cell.cell
