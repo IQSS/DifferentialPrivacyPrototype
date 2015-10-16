@@ -740,8 +740,6 @@ grid.onCellChange.subscribe(function (e, args){
    
    		cell = args.cell
    		row = args.row
-   		 console.log(row);
-   		  console.log("here");
    		rowComplete = CompleteRow(row)
    		if(!data[row].Variable && grid.getColumns()[cell].id !== "Variable"){
    			return false;
