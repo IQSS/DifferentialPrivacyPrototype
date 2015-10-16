@@ -764,7 +764,7 @@ grid.onCellChange.subscribe(function (e, args){
       var cell = grid.getCellFromEvent(e);
       row = cell.row;
       current_col = cell.cell
-	
+	console.log("click")
     if (grid.getColumns()[cell.cell].id === "Type") {
 	if (!grid.getEditorLock().commitCurrentEdit()) {
 	return;
