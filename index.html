@@ -19,6 +19,23 @@
     text-shadow: #4D4D4D 0.3em 0.3em 0.3em;
 }
 
+.img-hover img {
+    -webkit-transition: all .3s ease; /* Safari and Chrome */
+    -moz-transition: all .3s ease; /* Firefox */
+    -o-transition: all .3s ease; /* IE 9 */
+    -ms-transition: all .3s ease; /* Opera */
+    transition: all .3s ease;
+}
+.img-hover img:hover {
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+    -webkit-transform:translateZ(0) scale(2.50); /* Safari and Chrome */
+    -moz-transform:scale(2.50); /* Firefox */
+    -ms-transform:scale(2.50); /* IE 9 */
+    -o-transform:translatZ(0) scale(2.50); /* Opera */
+    transform:translatZ(0) scale(2.50);
+}
+
 footer {
   padding-top: 30px;
   padding-bottom: 15px;
@@ -30,6 +47,9 @@ td {
 }
 
 </style>
+
+
+
 
 </head>
 <body>
@@ -71,15 +91,15 @@ td {
 <col width="4%">
 <col width="16%">
 <tr>
-  <td><img src="./UI/images/flowupload.png" style="width:100%;"></td>
+  <td class="col-md-2 img-hover"><img src="./UI/images/flowupload.png" style="width:100%;"></td>
   <td><img src="./UI/images/flowarrow.png" style="width:100%;"></td>
-  <td><img src="./UI/images/flowbudget.png" style="width:100%;"></td>
+  <td class="col-md-2 img-hover"><img src="./UI/images/flowbudget.png" style="width:100%;"></td>
   <td><img src="./UI/images/flowarrow.png" style="width:100%;"></td>
-  <td><img src="./UI/images/flowdownload.png" style="width:100%;"></td>
+  <td class="col-md-2 img-hover"><img src="./UI/images/flowdownload.png" style="width:100%;"></td>
   <td><img src="./UI/images/flowarrow.png" style="width:100%;"></td>
-  <td><img src="./UI/images/flowtworavens.png" style="width:100%;"></td>
+  <td class="col-md-2 img-hover"><img src="./UI/images/flowtworavens.png" style="width:100%;"></td>
   <td><img src="./UI/images/flowarrow.png" style="width:100%;"></td>
-  <td><img src="./UI/images/flowinteractive.png" style="width:100%;"></td>
+  <td class="col-md-2 img-hover"><img src="./UI/images/flowinteractive.png" style="width:100%;"></td>
 </tr>
 <tr>
   <td align="center">Upload</td>
