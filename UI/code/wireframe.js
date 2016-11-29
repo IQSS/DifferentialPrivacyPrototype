@@ -2,14 +2,14 @@
 // Globals
 
 
-var production=true;
+var production=false;
 var fixeddataset=true;
 var fileid="";
 var hostname="";
 var dataurl="";
 
-if(production && fixeddataset){
-	fileid = "129";  // PUMS n=2000 subset on beta.dataverse.org
+if(production && fixeddatset){
+	fileid = "500";  // PUMS n=2000 subset on Dataverse-demo
 } 
 
 if(production && fileid=="") {
@@ -20,7 +20,7 @@ if(production && fileid=="") {
 if (!hostname && !production) {
        hostname="localhost:8080";
 } else if (!hostname && production) {
-    hostname="beta.dataverse.org"; //this will change when/if the production host changes
+    hostname="dataverse-demo.iq.harvard.edu"; //this will change when/if the production host changes
 }
 
 if (fileid && !dataurl) {
@@ -29,7 +29,7 @@ if (fileid && !dataurl) {
     // with the fileid supplied and the hostname we have
     // either supplied or configured:
     dataurl = "https://"+hostname+"/api/access/datafile/"+fileid;
-    //dataurl = dataurl+"?key="+apikey;
+    dataurl = dataurl+"?key="+apikey;
     // (it is also possible to supply dataurl to the script directly, 
     // as an argument -- L.A.)
 }
@@ -38,7 +38,7 @@ if (!production) {
     // base URL for the R apps:
     var rappURL = "http://0.0.0.0:8000/custom/";
 } else {
-    var rappURL = "https://beta.dataverse.org/custom/"; //this will change when/if the production host changes
+    var rappURL = "https://dataverse-demo.iq.harvard.edu/custom/"; //this will change when/if the production host changes
 }
 
 
@@ -155,6 +155,9 @@ function CompleteRow(row){
 			complete = true
 		}
 		if(stat === "Quantile" && d.UpperBound && d.LowerBound && d.Granularity){
+			complete = true
+		}
+		if(stat === "CDF" && d.UpperBound && d.LowerBound && d.Granularity){
 			complete = true
 		}
 		if(stat === "Histogram" && d.Numberofbins){
@@ -288,7 +291,7 @@ function talktoR(btn, df, x, y, globals) {
   		globals["del"] = globals["del"]*(big_n/n)
   	}
   	var jsonout = JSON.stringify({ df: df, fileid: fileid, globals: globals});  // Make this a local reference eventually
-    urlcall = base+"privateStatisticsapp";
+    urlcall = base+"privateStatistics";
     console.log("urlcall out: ", urlcall);
   
     makeCorsRequest(urlcall,btn, statisticsSuccess, estimateFail, jsonout);
@@ -303,7 +306,7 @@ function talktoR(btn, df, x, y, globals) {
   	}
   	var jsonout = JSON.stringify({ df: df, x: x, y: y, btn:btn, globals:globals});
   	console.log(jsonout)
-    urlcall = base+"privateAccuraciesapp";
+    urlcall = base+"privateAccuracies";
     console.log("urlcall out: ", urlcall);
     allResults = [];
     makeCorsRequest(urlcall,btn, estimateSuccess, estimateFail, jsonout);
@@ -327,14 +330,12 @@ function createCORSRequest(method, url, callback) {
         // CORS not supported.
         xhr = null;
     }
-
-    xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
     return xhr;  
 }
 
 
 // Make the actual CORS request.
-function makeCorsRequest(url,btn,callback, warningcallback, jsonout) {
+function makeCorsRequest(url,btn,callback, warningcallback, json) {
     var xhr = createCORSRequest('POST', url);
     if (!xhr) {
         alert('CORS not supported');
@@ -370,18 +371,16 @@ function makeCorsRequest(url,btn,callback, warningcallback, jsonout) {
         }
         console.log(xhr);
     };
-    var jsonstring = "tableJSON="+jsonout;
-    console.log("POST: ", jsonstring);
-    xhr.send(jsonstring);   
+    console.log("sending")
+    console.log(json);
+    xhr.send("tableJSON="+json);   
 }
 
-// global n value. Gets read once and never edited. Default of 1000. 
-var nval = 1000;
 function getGlobalParameters(){
 	var epsval=document.getElementById("epsilonbox").value;
 	var delval=document.getElementById("deltabox").value;
 	var betaval=document.getElementById("betabox").value;
-	//var nval = 1223992 //Need to get this from metadata too 
+	var nval = 1223992 //Need to get this from metadata too 
 	var globals={eps:epsval, del:delval, beta:betaval, n:nval};
 	return globals;
 	
@@ -530,26 +529,19 @@ function undo() {
     // dataset name trimmed to 12 chars
     var temp = xml.documentElement.getElementsByTagName("fileName");
     var dataname = temp[0].childNodes[0].nodeValue.replace( /\.(.*)/, "") ;  // regular expression to drop any file extension 
-    // read n from metadata file
-	var temp2 = xml.documentElement.getElementsByTagName("caseQnty");
-	nval = temp2[0].childNodes[0].nodeValue.replace( /\.(.*)/, "") ;
-	
     console.log("metadata query output");
     console.log(Variables);
     console.log(dataname);
-    console.log(typeMap);
-    console.log(nval)
+    console.log(typeMap)
     // Put dataset name, from meta-data, into header
-    d3.select("#datasetName").selectAll("h3")
+    d3.select("#datasetName").selectAll("h2")
     .html(dataname);
 
-	
-	
-    var columns = [
+  var columns = [
     {id: "delCol", name: "", field: "del", width: 40, minWidth:40, maxWidth: 40, formatter:deleteFormatter},
     {id: "Variable", name: "Variable", field: "Variable", width: 100, minWidth: 100, maxWidth:100, validator: requiredFieldValidator, options: Variables, toolTip:"Variable from the dataset on which to compute a statistic.", editor: Slick.Editors.SelectOption},
     {id: "Type", name: "Type", field: "Type", width: 100, minWidth:100, maxWidth: 100, options:["Numerical","Categorical", "Boolean"], toolTip:"Select numerical if data are numbers (e.g. age), categorical if data fall into distinct groups (e.g. multiple choice questions), and boolean if data only fall into two groups (e.g. yes or no questions).", editor: Slick.Editors.SelectOption},
-    {id: "Statistic", name: "Statistic", width: 100, minWidth: 100, maxWidth: 100, field:"Statistic", options:["Mean","Quantile","Histogram"], toolTip: "Statistic to compute on variable. Selecting quantiles computes the entire cumulative distribution function. Histograms cannot be computed on numerical data and mean/quantile cannot be computed on categorical/boolean data.", editor: Slick.Editors.SelectOption},
+    {id: "Statistic", name: "Statistic", width: 100, minWidth: 100, maxWidth: 100, field:"Statistic", options:["Mean","Quantile","Histogram","CDF"], toolTip: "Statistic to compute on variable. Selecting quantiles computes the entire cumulative distribution function. Histograms cannot be computed on numerical data and mean/quantile cannot be computed on categorical/boolean data.", editor: Slick.Editors.SelectOption},
     {id: "UpperBound", name: "Upper \nBound", field: "UpperBound", width: 80, minWidth: 80, maxWidth: 80, toolTip: "Estimate of the maximum value of this variable. If the reported upper bound is smaller than the true upper bound, data will be truncated to fit the reported value.", editor: Slick.Editors.Text},
     {id: "LowerBound", name: "Lower \nBound", field: "LowerBound", width: 80, minWidth: 80, maxWidth: 80, toolTip: "Estimate of the minimum value of this variable. If the reported lower bound is larger than the true lower bound, data will be truncated to fit the reported value.", editor: Slick.Editors.Text},
     {id: "Granularity", name: "Granularity", field: "Granularity", width: 80, minWidth: 80, maxWidth: 80, toolTip:"Estimate the minimum distance between any two values of this variable (e.g. age granularity = 1 year, income granularity = 100 dollars). The reported granularity dictates the distance between two points in the cumulative distribution function.", editor: Slick.Editors.Text},
@@ -686,6 +678,36 @@ grid.onCellChange.subscribe(function (e, args){
 		}
 		d.Numberofbins  = "na" 		
    }
+    if(d.Statistic === "CDF"){
+		if(d.UpperBound === "na"){
+			d.UpperBound = ""
+		}
+		if(d.LowerBound === "na"){
+			d.LowerBound = ""
+			}
+		if(d.Granularity === "na"){
+			d.Granularity = ""
+		}
+		
+		if(ind !== -1 && ind !== row){
+			//check if stat is already in the grid
+			
+			autoUp = data[ind].UpperBound 
+			autoLo = data[ind].LowerBound 
+			autoGran = data[ind].Granularity
+			
+			if(!d.UpperBound  && autoUp !== "na"){
+				d.UpperBound = autoUp
+			}
+			if(!d.LowerBound  && autoLo !== "na"){
+				d.LowerBound = autoLo
+			}
+			if(!d.Granularity  && autoGran !== "na"){
+				d.Granularity = autoGran
+			}
+		}
+		d.Numberofbins  = "na" 		
+   }
    if(d.Statistic === "Histogram"){
 		if(d.Numberofbins === "na"){
 			d.Numberofbins = ""
@@ -761,6 +783,7 @@ grid.onCellChange.subscribe(function (e, args){
    });
    
       grid.onClick.subscribe(function (e) {
+     
       var cell = grid.getCellFromEvent(e);
       row = cell.row;
       current_col = cell.cell

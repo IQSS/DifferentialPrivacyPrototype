@@ -1,0 +1,149 @@
+button.accordion {
+    background-color: #eee;
+    color: #444;
+    cursor: pointer;
+    padding: 18px;
+    width: 100%;
+    border: none;
+    text-align: left;
+    outline: none;
+    font-size: 15px;
+    transition: 0.4s;
+}
+
+button.accordion.active, button.accordion:hover {
+    background-color: #ddd;
+}
+
+div.panel {
+    width: 100%;
+    padding: 0 18px;
+    display: none;
+    background-color: #eee;
+    padding-top: 0.5em;
+    padding-bottom: 0.5em;
+}
+
+div.panel.show {
+    display: block !important;
+}
+
+
+
+
+
+
+
+
+/* Submit Table Format */
+#epsilon_table table, #epsilon_table th, #epsilon_table td {
+    border: 1px solid black;
+    border-collapse: collapse;
+}
+#epsilon_table th, #epsilon_table td {
+    padding: 5px;
+    text-align: center;
+}
+
+
+
+
+
+
+
+/*Sidebar and Header*/
+/*http://www.w3schools.com/html/tryit.asp?filename=tryhtml_layout_flexbox*/
+.flex-container {
+    display: -webkit-flex;
+    display: flex;
+    -webkit-flex-flow: row wrap;
+    flex-flow: row wrap;
+    text-align: center;
+}
+
+.flex-container > * {
+    padding: 15px;
+    -webkit-flex: 1 100%;
+    flex: 1 100%;
+}
+
+.main {
+    text-align: left;
+}
+
+header {
+    background: #64867f;
+    color:white;
+}
+
+footer {
+    background: #F9F9F9;
+    color:black;
+    text-align: center;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.variable_sidebar {
+    border:1px solid #ADADAD;
+    
+    background:#F9F9F9;  
+}
+
+.epsilon_sidebar {
+    background:#eef;
+}
+
+@media all and (min-width: 768px) {
+    .variable_sidebar {text-align:left;-webkit-flex: 0 auto;flex:0 auto;-webkit-order:1;order:1;}
+    .main {-webkit-flex:5 auto;flex:5 auto;-webkit-order:2;order:2;}
+    .epsilon_sidebar {text-align:left;-webkit-flex: 1 auto;flex:1 auto;-webkit-order:3;order:3;}
+    footer {-webkit-order:4;order:4;}
+}
+
+
+
+
+
+
+
+
+
+
+
+
+/*Varible Selection: https://www.html5andbeyond.com/live-search-a-html-list-using-jquery-no-plugin-needed/*/
+.live-search-list {
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+    padding: 0em;
+    background-color: #eee;
+    -webkit-border-radius: 5px;
+    -moz-border-radius: 5px;
+    border-radius: 5px;
+    color: #fff;
+}
+
+.live-search-box {
+    width: 100%;
+    display: block;
+    padding: 1em;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+    border: 1px solid #3498db;
+    -webkit-border-radius: 5px;
+    -moz-border-radius: 5px;
+    border-radius: 5px;
+}
+
+.live-search-list li {
+    color: black;
+    list-style: none;
+    padding: 5px;
+    margin: 5px 0;
+    background: #f0f8ff;
+    text-align: center;
+    z-index:25;
+}
