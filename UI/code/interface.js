@@ -176,7 +176,7 @@ var hostname="";
 var metadataurl = "";
 var ddiurl = "";
 
-var dataverse_available = false;  // When Dataverse repository goes down, or is otherwise unavailable, this is a quick override for searching for metadata by url.
+var dataverse_available = true;  // When Dataverse repository goes down, or is otherwise unavailable, this is a quick override for searching for metadata by url.
 
 // Set the fileid (Dataverse reference number) for dataset to use 
 
