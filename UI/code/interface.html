@@ -27,10 +27,10 @@
 <div id="setdataset" style="padding:10px 10px 10px 50px;background:#f2f2e6;">
 <table>
     <tr>
-        <td align="right">
+        <td title="This demonstration is linked to a test instance of Dataverse at https://beta.dataverse.org &#13;  You can select one of the example datasets by name, or any other dataset (including your own) by entering the file ID number below." align="right">
             Select Dataverse dataset for demonstration:
         </td>
-        <td style="padding:0 0 0 8px;">
+        <td title="This demonstration is linked to a test instance of Dataverse at https://beta.dataverse.org &#13;  You can select one of the example datasets by name, or any other dataset (including your own) by entering the file ID number below." style="padding:0 0 0 8px;">
             <select name="dataselect" id="dataselect" onchange="changedataset(this.value)">
             <option value="0">- Select -</option>
             <option value="20" selected="selected" >Census PUMS</option>
@@ -40,10 +40,10 @@
         </td>
     </tr>    
     <tr>
-        <td align="right">
+        <td title="You can select any dataset on the test Dataverse instance at https://beta.dataverse.org by entering its unique file ID number, or use one of the datasets provided in the selection box above." align="right">
             or enter Dataverse fileid number:
         </td>
-        <td style="padding:0 0 0 8px;">
+        <td title="You can select any dataset on the test Dataverse instance at https://beta.dataverse.org by entering its unique file ID number, or use one of the datasets provided in the selection box above." style="padding:0 0 0 8px;">
             <input type="text" name="altfileid" onchange="overridedataset(this.value)" maxlength="5" style="width: 50px;" >
         </td>
     </tr>
@@ -53,52 +53,52 @@
 
     <div class="flex-container">
         <header>
-<div id="datasetName" style="text-align:center;">
+<div title="This is the name, in Dataverse, of the selected example dataset." id="datasetName" style="text-align:center;">
   <h2 style="display:inline;">Dataset Name</h2>
 </div>
-            <h4>Privacy Parameters</h4>
+            <h4 title="These are adjustable parameters that define the level of privacy protection guaranteed by the differentially private released statistics.">Privacy Parameters</h4>
             <table align="center">
                 <tr>
-                    <td>
+                    <td title="Epsilon from definition of differential privacy. Smaller values correspond to more privacy.">
                         Epsilon (&epsilon;)
                     </td>
-                    <td>
+                    <td title = "Delta from definition of differential privacy. Smaller values correspond to more privacy.">
                         Delta (&delta;)
                     </td>
-                    <td style="padding:0 15px 0 15px;" >
+                    <td title="Probability that the error for a given statistic exceeds the estimate reported in the Accuracy column." style="padding:0 15px 0 15px;" >
                         Beta (&Beta;)
                     </td>
 
-                    <td>
+                    <td title="Is the data a random and secret sample from a larger population of known size? Here, secret means that the choice of the people in the sample has not been revealed. If this is the case, you can improve the accuracy of your statistics without changing the privacy guarantee. Estimate the size of the larger population. It is important to be conservative in your estimate. In other words, it is okay underestimate but could violate privacy if you overestimate.">
                         Secrecy of the Sample
                     </td>
-                    <td>
+                    <td title="When using secrecy of the sample, you get a boost in epsilon, which is represented here. This value can only be edited by changing the epsilon or secrecy of the sample fields.">
                         Functioning Epsilon
                     </td>
-                    <td>
+                    <td title="When using secrecy of the sample, you get a boost in delta, which is represented here. This value can only be edited by changing the delta or secrecy of the sample fields.">
                         Functioning Delta
                     </td>
 
                 </tr>
                 <tr>
                     <td>
-                        <input name="epsilon" onfocusout="global_parameters_epsilon(this)" value="0.1" style="color: black;" type="text" placeholder="Epsilon">
+                        <input name="epsilon" onfocusout="global_parameters_epsilon(this)" title="Epsilon from definition of differential privacy. Smaller values correspond to more privacy." value="0.1" style="color: black;" type="text" placeholder="Epsilon">
                     </td>
                     <td>
-                        <input name="delta" onfocusout="global_parameters_delta(this)" value="0.000001" style="color: black;" type="text" placeholder="Delta">
+                        <input name="delta" onfocusout="global_parameters_delta(this)"  title = "Delta from definition of differential privacy. Smaller values correspond to more privacy." value="0.000001" style="color: black;" type="text" placeholder="Delta">
                     </td>
                     <td style="padding:0 15px 0 0;">
-                        <input name="beta" onfocusout="global_parameters_beta(this)" value="0.05" style="color: black;" type="text" placeholder="Beta">
+                        <input name="beta" onfocusout="global_parameters_beta(this)" title="Probability that the error for a given statistic exceeds the estimate reported in the Accuracy column." value="0.05" style="color: black;" type="text" placeholder="Beta">
                     </td>
 
                     <td>
-                        <input id="SS" name="SS" onfocusout="global_parameters_SS(this)" value="" style="color: black;" type="text" placeholder="">
+                        <input id="SS" name="SS" onfocusout="global_parameters_SS(this)" title="Is the data a random and secret sample from a larger population of known size? Here, secret means that the choice of the people in the sample has not been revealed. If this is the case, you can improve the accuracy of your statistics without changing the privacy guarantee. Estimate the size of the larger population. It is important to be conservative in your estimate. In other words, it is okay underestimate but could violate privacy if you overestimate." value="" style="color: black;" type="text" placeholder="">
                     </td>
                     <td>
-                        <input id="FE" name="FE" value="" style="color: black;" type="text" placeholder="none if no Sec. Sample" readonly>
+                        <input id="FE" name="FE" title="When using secrecy of the sample, you get a boost in epsilon, which is represented here. This value can only be edited by changing the epsilon or secrecy of the sample fields." value="" style="color: black;" type="text" placeholder="none if no Sec. Sample" readonly>
                     </td>
                     <td>
-                        <input id="FD" name="FD" value="" style="color: black;" type="text" placeholder="none if no Sec. Sample" readonly>
+                        <input id="FD" name="FD" title="When using secrecy of the sample, you get a boost in delta, which is represented here. This value can only be edited by changing the delta or secrecy of the sample fields." value="" style="color: black;" type="text" placeholder="none if no Sec. Sample" readonly>
                     </td>
 
                 </tr>
@@ -110,7 +110,7 @@
                     <td>
                     </td>
                     <td>
-                    <input type="button" style="color:gray;" onclick="clear_SS()" value="Clear">
+                    <input title="Remove any entered value for the secrecy of the sample, and revert privacy parameters to the values without adjustment." type="button" style="color:gray;" onclick="clear_SS()" value="Clear">
                     </td>
                     <td>
                     </td>
@@ -143,8 +143,8 @@
     <footer>
         <div>
             <br>
-            <button onclick='report();' style="color:gray;">Show Underlying Table</button>
-            <button onclick='submit();' style="color:red;">Submit Table and Generate Differentially Private Release</button>
+            <button title="This shows the full underlying table that is being constructed, containing all the metadata information, and budgeting of epsilon and accuracies." onclick='report();' style="color:gray;">Show Underlying Table</button>
+            <button title="This button creates a differentially private release of the statistics presently requested, at their budgeted values of the privacy parameters." onclick='submit();' style="color:red;">Submit Table and Generate Differentially Private Release</button>
             <br>
             <br>
             &Psi; Private data Sharing Interface
