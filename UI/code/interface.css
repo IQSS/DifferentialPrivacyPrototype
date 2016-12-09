@@ -69,6 +69,7 @@ div.panel.show {
 
 .main {
     text-align: left;
+    margin-bottom:100px;
 }
 
 header {
@@ -93,12 +94,14 @@ footer {
     border:1px solid #ADADAD;
     background:#F9F9F9; 
     margin: 0.5em; 
+    margin-bottom:100px;
 }
 
 .epsilon_sidebar {
     border:1px solid #ADADAD;
     background:#eef;
     margin: 0.5em; 
+    margin-bottom: 100px;
 }
 
 @media all and (min-width: 768px) {
