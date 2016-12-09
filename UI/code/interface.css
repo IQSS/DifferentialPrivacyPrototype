@@ -77,6 +77,11 @@ header {
 }
 
 footer {
+    position: fixed;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    padding: 1rem;
     background: #F9F9F9;
     color:black;
     text-align: center;
@@ -86,12 +91,14 @@ footer {
 
 .variable_sidebar {
     border:1px solid #ADADAD;
-    
-    background:#F9F9F9;  
+    background:#F9F9F9; 
+    margin: 0.5em; 
 }
 
 .epsilon_sidebar {
+    border:1px solid #ADADAD;
     background:#eef;
+    margin: 0.5em; 
 }
 
 @media all and (min-width: 768px) {
@@ -100,15 +107,6 @@ footer {
     .epsilon_sidebar {text-align:left;-webkit-flex: 1 auto;flex:1 auto;-webkit-order:3;order:3;}
     footer {-webkit-order:4;order:4;}
 }
-
-
-
-
-
-
-
-
-
 
 
 
