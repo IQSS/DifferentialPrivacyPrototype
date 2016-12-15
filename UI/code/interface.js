@@ -938,6 +938,7 @@ function make_bubble (variable) {
                         "<option id='default_" + variable + "' value='default'>Please select a type</option>" +
                         list_of_types(variable) +
                     "</select>" +
+                    "<button type='button' class='manualinfo' data-load-url='psiIntroduction.html' data-toggle='modal' data-target='#myModal' data-id='statistics'parameters' style='float:right;'><span class='glyphicon glyphicon-question-sign' style='color:#ADD8E6;font-size:12px;'></span></button>" +
                 "</div>" +
                 "<hr style='margin-top: -0.25em'>" +
                 "<div id='released_statistics_" + variable + "' class='released_statistics'>" +

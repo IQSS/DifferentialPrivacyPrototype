@@ -15,6 +15,23 @@ button.accordion.active, button.accordion:hover {
     background-color: #ddd;
 }
 
+button.manualinfo {
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    outline: none;
+    border: 0;
+    background: transparent;
+}
+
+.modal-dialog{
+    overflow-y: initial !important
+}
+.modal-body{
+    height: calc(100vh - 180px);
+    overflow-y: auto;
+}
+
 div.panel {
     width: 100%;
     padding: 0 18px;
@@ -30,11 +47,6 @@ div.panel.show {
 
 
 
-
-
-
-
-
 /* Submit Table Format */
 #epsilon_table table, #epsilon_table th, #epsilon_table td {
     border: 1px solid black;
@@ -44,9 +56,6 @@ div.panel.show {
     padding: 5px;
     text-align: center;
 }
-
-
-
 
 
 
@@ -71,6 +80,7 @@ div.panel.show {
     text-align: left;
     margin-bottom:100px;
 }
+
 
 header {
     background: #64867f;
