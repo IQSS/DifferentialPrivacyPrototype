@@ -171,12 +171,12 @@ console.log(variable_list);
 //////////////
 // Globals
 
-var production=true;
+var production=false;
 var hostname="";
 var metadataurl = "";
 var ddiurl = "";
 
-var dataverse_available = true;  // When Dataverse repository goes down, or is otherwise unavailable, this is a quick override for searching for metadata by url.
+var dataverse_available = false;  // When Dataverse repository goes down, or is otherwise unavailable, this is a quick override for searching for metadata by url.
 
 // Set the fileid (Dataverse reference number) for dataset to use 
 
@@ -938,7 +938,7 @@ function make_bubble (variable) {
                         "<option id='default_" + variable + "' value='default'>Please select a type</option>" +
                         list_of_types(variable) +
                     "</select>" +
-                    "<button type='button' class='manualinfo' data-load-url='psiIntroduction.html' data-toggle='modal' data-target='#myModal' data-id='statistics'parameters' style='float:right;'><span class='glyphicon glyphicon-question-sign' style='color:#ADD8E6;font-size:12px;'></span></button>" +
+                    "<button type='button' class='manualinfo' data-load-url='psiIntroduction.html' data-toggle='modal' data-target='#myModal' data-id='statistics' style='float:right;'><span class='glyphicon glyphicon-question-sign' style='color:#ADD8E6;font-size:12px;'></span></button>" +
                 "</div>" +
                 "<hr style='margin-top: -0.25em'>" +
                 "<div id='released_statistics_" + variable + "' class='released_statistics'>" +
@@ -1389,7 +1389,8 @@ function areAllHeld2 (variable) {
 // Creates Epsilon 
 function generate_epsilon_table () {
     var epsilon_table = 
-    "<table id='epsilon_table' style='width: 100%;'>" +
+    "<button type='button' class='manualinfo' data-load-url='psiIntroduction.html' data-toggle='modal' data-target='#myModal' data-id='statistics' style='float:right;padding-top:0.5em;'><span class='glyphicon glyphicon-question-sign' style='color:#ADD8E6;font-size:12px;'></span></button>" +
+    "<table id='epsilon_table' style='width: calc(100% - 24px);'>" +
         "<tr>" +
             "<td style='font-weight: bold;'>" +
                 "Variable Name" +

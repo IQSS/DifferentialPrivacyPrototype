@@ -110,6 +110,7 @@ footer {
 .epsilon_sidebar {
     border:1px solid #ADADAD;
     background:#eef;
+    padding-right:0px;
     margin: 0.5em; 
     margin-bottom: 100px;
 }
