@@ -186,9 +186,11 @@
         var sectionOffset = $('#' + section).offset();
         console.log(sectionOffset);
         //scroll the container
-        $('#myModal .modal-body').animate({
-            scrollTop: sectionOffset.top -100
-        }, "fast");
+        if (typeof variable !== 'undefined') {
+            $('#myModal .modal-body').animate({
+                scrollTop: sectionOffset.top -100
+            }, "fast");
+        };
         });
     </script> 
     <script type="text/javascript" src="interface.js"></script> 
