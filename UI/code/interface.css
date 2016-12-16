@@ -2,7 +2,7 @@ button.accordion {
     background-color: #eee;
     color: #444;
     cursor: pointer;
-    padding: 18px;
+    padding: 16px;
     width: 100%;
     border: none;
     text-align: left;
@@ -13,7 +13,6 @@ button.accordion {
 
 button.accordion.active, button.accordion:hover {
     background-color: #ddd;
-    padding: 18px;
 }
 
 button.manualinfo {
@@ -35,7 +34,7 @@ button.manualinfo {
 
 div.panel {
     width: 100%;
-    padding: 0 18px;
+    padding: 0 16px;
     display: none;
     background-color: #eee;
     padding-top: 0.5em;
@@ -44,9 +43,8 @@ div.panel {
 
 div.panel.show {
     display: block !important;
+    margin-bottom: 0px;
 }
-
-
 
 /* Submit Table Format */
 #epsilon_table table, #epsilon_table th, #epsilon_table td {
