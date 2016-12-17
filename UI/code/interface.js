@@ -920,6 +920,17 @@ function list_of_statistics (type_chosen, variable) {
     return options;
 };
 
+function jamestoggle(button) {
+    accordion(button);
+    //console.log(button);
+    //console.log(button.classList.contains("active"));
+    if (button.classList.contains("active")) {
+      $(button).find(".glyphicon").removeClass("glyphicon-menu-up").addClass("glyphicon-menu-down");
+    } else {
+      $(button).find(".glyphicon").removeClass("glyphicon-menu-down").addClass("glyphicon-menu-up");
+    }
+};
+
 // Makes bubbles and takes in variable name as unique identifier
 // Forces each variable to have an unique name
 function make_bubble (variable) {
@@ -928,8 +939,9 @@ function make_bubble (variable) {
     var blank_bubble = 
     "<div id='" + variable + "'>" + 
         "<div class='bubble' id='bubble_" + variable + "'>" +
-            "<button class='accordion' id='accordion_" + variable + "' onclick='accordion(this)'>" +
+            "<button class='accordion' id='accordion_" + variable + "' onclick=jamestoggle(this)>" +
                 variable_raw +
+                "<i class='glyphicon glyphicon-menu-up' style='color:#444;font-size:16px;float:right;'></i>" +
             "</button>" +
             "<div id='panel_" + variable + "' class='panel'>" +
                 "<div id='variable_types_" + variable + "' class='variable_types'>" +
