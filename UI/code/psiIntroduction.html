@@ -1,8 +1,8 @@
 <div id="welcome">
-The following shows a tool that helps data depositors distribute a privacy budget across many statistics. This tool is called the <i>budgeter</i>.  Users select which statistics they would like to calculate and are given estimates of how accurately each statistic can be computed. They can also redistribute their privacy budget according to which statistics they think are most valuable in their dataset. 
+The following demonstrates a tool that helps data depositors release privacy preserving statistics describing a dataset, by distributing a privacy budget across different possible statistical calculations. This tool is called the <i>budgeter</i>.  Users select which statistics they would like to calculate and are given estimates of how accurately each statistic can be computed. They can also redistribute their privacy budget according to which statistics they think are most valuable in their dataset. 
 </p>
 <p>
-Below is found a brief introduction to differential privacy, and to all the features and requirements of this tool.  You can bring this explanatory page back at any point, by clicking any of the information buttons, marked <span class="glyphicon glyphicon-question-sign" style="color:#A3CEDC;font-size: 12px;"></span>.
+Below is found a brief introduction to differential privacy, the mathematical framework that provides the privacy guarantees, and an overview of all the features and requirements of this tool.  You can bring this explanatory page back at any point, by clicking any of the information buttons, marked <span class="glyphicon glyphicon-question-sign" style="color:#A3CEDC;font-size: 12px;"></span>.
 </p>
 <br>
 <br>
@@ -69,10 +69,10 @@ When using the tool you will build up a table row by row where each row correspo
 <div id="metadata">
 <h4>Entering Metadata</h4>
 <p>
-The privacy preserving algorithms to generate these statstics each require certain auxiliary information about the variables, which we refer to as <i>metadata</i>.  Differentent statistics require different metadata.  The tool will only ask for the metadata needed to complete the set of statistics presently chosen by the user.  Here are the meanings of these metadata values:
+The privacy preserving algorithms to generate these statistics each require certain auxiliary information about the variables, which we refer to as <i>metadata</i>.  Different statistics require different metadata.  The tool will only ask for the metadata needed to complete the set of statistics presently chosen by the user.  Here are the meanings of these metadata values:
 </p>
 <p>
-<b>Upper Bound:</b> The largest value that this variable can take on. Any observations in the raw data beyond this value will be replaced with this bound (sometimes this is refered to as <i>top-coding</i> or <i>censoring</i>).  For example, if the upper bound on age is entered as 100, and a person in the data had recorded age of 105, this observation would be overridden to the value of 100 for the calculation of any statistics.
+<b>Upper Bound:</b> The largest value that this variable can take on. Any observations in the raw data beyond this value will be replaced with this bound (sometimes this is referred to as <i>top-coding</i> or <i>censoring</i>).  For example, if the upper bound on age is entered as 100, and a person in the data had recorded age of 105, this observation would be overridden to the value of 100 for the calculation of any statistics.
 </p>
 <p>
 <b>Lower Bound:</b> The smallest value that this variable can take on. Any observations in the raw data below this value will be replaced with this bound.
@@ -118,7 +118,7 @@ When you are finished selecting all of your statistics and are satisfied with th
 </p>
 <p>
 <b>Show Underlying Table</b>
-As the tool cummulates information from the depositor or analyst, such as privacy parameters, requested statistics, metadata, desired accuracies, and released values, this information is built up into an underlying table describing the dataset.  This button allows this table to be inspected.  This table is rarely of direct interest, but is useful in presentations for demonstrating how some features of the prototype are working.
+As the tool cumulates information from the depositor or analyst, such as privacy parameters, requested statistics, metadata, desired accuracies, and released values, this information is built up into an underlying table describing the dataset.  This button allows this table to be inspected.  This table is rarely of direct interest, but is useful in presentations for demonstrating how some features of the prototype are working.
 </p>
 </div>
 
