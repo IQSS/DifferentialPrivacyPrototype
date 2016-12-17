@@ -941,7 +941,7 @@ function make_bubble (variable) {
         "<div class='bubble' id='bubble_" + variable + "'>" +
             "<button class='accordion' id='accordion_" + variable + "' onclick=jamestoggle(this)>" +
                 variable_raw +
-                "<i class='glyphicon glyphicon-menu-up' style='color:#444;font-size:16px;float:right;'></i>" +
+                "<i class='glyphicon glyphicon-menu-up' style='color:#A0A0A0;font-size:16px;float:right;'></i>" +
             "</button>" +
             "<div id='panel_" + variable + "' class='panel'>" +
                 "<div id='variable_types_" + variable + "' class='variable_types'>" +
