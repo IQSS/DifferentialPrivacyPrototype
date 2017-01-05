@@ -182,11 +182,12 @@
         var section = button.data('id');
         // load in the page content from separate document
         $(this).find('.modal-body').load(loadurl);
-        // get the top of the section
-        var sectionOffset = $('#' + section).offset();
-        console.log(sectionOffset);
+
         //scroll the container
-        if (typeof variable !== 'undefined') {
+        if (typeof section !== 'undefined') {
+            var sectionOffset = $('#' + section).offset();
+            // get the top of the section
+            console.log(sectionOffset);
             $('#myModal .modal-body').animate({
                 scrollTop: sectionOffset.top -100
             }, "fast");
@@ -201,7 +202,6 @@
         $('#myModal').find('.modal-body').load("psiIntroduction.html");
         });
     </script> 
-
 
 </body>
 
