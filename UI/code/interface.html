@@ -93,8 +93,9 @@
                         <input name="beta" onfocusout="global_parameters_beta(this)" title="Probability that the error for a given statistic exceeds the estimate reported in the Accuracy column." value="0.05" style="color: black;" type="text" placeholder="Beta">
                     </td>
 
-                    <td>
+                    <td style="padding:0 15px 0 0;">
                         <input id="SS" name="SS" onfocusout="global_parameters_SS(this)" title="Is the data a random and secret sample from a larger population of known size? Here, secret means that the choice of the people in the sample has not been revealed. If this is the case, you can improve the accuracy of your statistics without changing the privacy guarantee. Estimate the size of the larger population. It is important to be conservative in your estimate. In other words, it is okay underestimate but could violate privacy if you overestimate." value="" style="color: black;" type="text" placeholder="">
+                        <input title="Remove any entered value for the secrecy of the sample, and revert privacy parameters to the values without adjustment." type="button" style="color:gray;" onclick="clear_SS()" value="Clear">
                     </td>
                     <td>
                         <input id="FE" name="FE" title="When using secrecy of the sample, you get a boost in epsilon, which is represented here. This value can only be edited by changing the epsilon or secrecy of the sample fields." value="" style="color: black;" type="text" placeholder="none if no Sec. Sample" readonly>
@@ -104,20 +105,6 @@
                     </td>
 
                 </tr>
-                <tr>
-                    <td>
-                    </td>
-                    <td>
-                    </td>
-                    <td>
-                    </td>
-                    <td>
-                    <input title="Remove any entered value for the secrecy of the sample, and revert privacy parameters to the values without adjustment." type="button" style="color:gray;" onclick="clear_SS()" value="Clear">
-                    </td>
-                    <td>
-                    </td>
-                    <td>
-                    </td>
             </table>
 
          </header>
