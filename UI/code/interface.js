@@ -1440,7 +1440,7 @@ function generate_epsilon_table () {
                             (parseFloat(inputted_metadata[varlist_active[n].replace(/\s/g, '_')][stat_index + 1]).toFixed(4)).toString() +
                         "</td>" +
                         "<td>" +
-                            "<input type='text' style='width:75px' value='" + (parseFloat(inputted_metadata[varlist_active[n].replace(/\s/g, '_')][stat_index + 2]).toFixed(4)).toString() + "' name='accuracy_" + statistic_list[m] + "' onclick='record_table()' onfocusout='ValidateAccuracy(this, \"pos_number\", \"" + varlist_active[n].replace(/\s/g, '_') + "\", \"" + statistic_list[m] + "\");' " +
+                            "<input type='text' style='width:75px' value='" + (parseFloat(inputted_metadata[varlist_active[n].replace(/\s/g, '_')][stat_index + 2]).toFixed(4)).toString() + "' name='accuracy_" + statistic_list[m] + "' onclick='record_table()' onchange='ValidateAccuracy(this, \"pos_number\", \"" + varlist_active[n].replace(/\s/g, '_') + "\", \"" + statistic_list[m] + "\");' " +
                         "</td>" +
                         "<td>";
                         
@@ -1454,11 +1454,11 @@ function generate_epsilon_table () {
 
                     else {
                         epsilon_table += 
-                        "<td title='Epsilon will be edittable after putting in the necessary metadata fields.'>" +
+                        "<td title='Epsilon will be editable after putting in the necessary metadata fields.'>" +
                         "</td>" +
-                        "<td title='Accuracy will be edittable after putting in the necessary metadata fields.'>" +
+                        "<td title='Accuracy will be editable after putting in the necessary metadata fields.'>" +
                         "</td>" +
-                        "<td title='Hold status will be edittable after putting in the necessary metadata fields.'>";
+                        "<td title='Hold status will be editable after putting in the necessary metadata fields.'>";
                     }
                     
                 epsilon_table +=    
