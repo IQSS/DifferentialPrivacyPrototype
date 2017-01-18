@@ -1,3 +1,9 @@
+<style>
+img {
+    display: block;
+    margin: 0 auto;
+}
+</style>
 <div id="welcome">
 The following demonstrates a tool that helps data depositors release privacy preserving statistics describing a dataset, by distributing a privacy budget across different possible statistical calculations. This tool is called the <i>budgeter</i>.  Users select which statistics they would like to calculate and are given estimates of how accurately each statistic can be computed. They can also redistribute their privacy budget according to which statistics they think are most valuable in their dataset. 
 </p>
@@ -26,7 +32,7 @@ The definition of differential privacy emerged from a long line of work applying
 <ul>
 <li>Your dataset must be tabular with rows corresponding to subjects and columns corresponding to variables. </li>
 <li>There should not be any missing values (empty cells in the table). </li>
-<li>It is assumed that the total number of observations in the dataset is public information and can be released.  This value is not treated in a privacy preserving manner.</li>
+<li>It is assumed that the total number of observations (rows) in the dataset is public information and can be released.  This value is not treated in a privacy preserving manner.</li>
 <li>The observations of the data are assumed to be independent, that is, the data of any one subject affects at most one record.  This would be violated, for example, if there were parents and children in the same dataset, and the recorded income of parents was duplicated as the income of their children.</li>
 </ul>
 </div>
@@ -37,7 +43,11 @@ The definition of differential privacy emerged from a long line of work applying
 The level of privacy protection in differential privacy is governed by two parameters: epsilon (&epsilon;) and delta (&delta;). The smaller these numbers, the more privacy is guaranteed. However if these numbers are too small, the released statistics will become less accurate. We guide you through selecting these parameters below. 
 </p>
 <p>
-Typical epsilon values are in the regime of .01-1. This table gives some intuition about the effects of different choices of epsilon (top row). Imagine an adversary has prior belief about the probability that you have some trait. These are listed in the vertical column on the left. If your data were in a dataset, the table shows the new belief that that adversary could infer from looking at differentially private statistics about the dataset with differing values of epsilon. For example, if an adversary had a prior belief of 10% that you have a particular trait, then outputs from a differentially private algorithm with epsilon set to .2 could update his belief to at most 11.95%. 
+Typical epsilon values are in the regime of .01-1. This table gives some intuition about the effects of different choices of epsilon (top row).</p>
+
+<img src="../images/DPInterpretationofEpsilonTable.png" align="middle">
+<p>
+Imagine an adversary has prior belief about the probability that you have some trait. These are listed in the vertical column on the left. If your data were in a dataset, the table shows the new belief that that adversary could infer from looking at differentially private statistics about the dataset with differing values of epsilon. For example, if an adversary had a prior belief of 10% that you have a particular trait, then outputs from a differentially private algorithm with epsilon set to .2 could update his belief to at most 11.95%. 
 </p>
 <p>
 Select an epsilon below.  You will be able to change it later and see how it affects the accuracies of your statistics.  We highly recommend that your epsilon does not exceed 1. Remember, the smaller the epsilon, the less accurate your statistics become. 
@@ -46,14 +56,14 @@ Select an epsilon below.  You will be able to change it later and see how it aff
 In the worst case, delta is the probability that all information about the dataset is leaked. For this reason, delta is typically set to a very small number, such as the probability that somebody can break an encryption scheme. We recommend a delta of one in ten million or smaller. 
 </p>
 <p>
-For a given level of privacy protection, there are limits on how much statistical information can be released and how accurately. It is important to make judicious choices about how to use the limited budget that you have. The following tool assists you in making those choices. 
+For a given level of privacy protection, there are limits on how much statistical information can be released and how accurately. It is important to make judicious choices about how to use the limited budget that you have. The budgeter tool assists you in making those choices. 
 </p>
 </div>
 
 <div id="statistics">
 <h4>Available Privacy Preserving Statistics</h4>
 <p>
-When using the tool you will build up a table row by row where each row corresponds to a separate statistic to be released. Begin by selecting the variable on which to compute a new statistic. Then select the statistic type from the options we currently support:
+When using the tool you will select statistics to be released one by one. Begin by selecting the variable on which to compute a new statistic in the left panel. This will spawn a box in the center panel for that variable. Fill in the variable type (e.g. boolean, numerical, categorical) and then select the statistic from the options we currently support:
 </p>
 <p>
 <b>Mean:</b> Computes the average value of the variable.
@@ -84,23 +94,23 @@ The privacy preserving algorithms to generate these statistics each require cert
 <b>Number of Bins:</b> The number of different categories present in the data. For example, yes or no questions have 2 bins. 
 </p>
 <p>
-Remember it is important to fill in the metadata as though you have never seen the data. For example, if there is an age variable in the dataset, a lower bound of 0 and an upper bound of 100 are reasonable guesses for the range of ages in any dataset.  If on the other hand, it is public information that the dataset is a survey of US voters, then putting an age lower bound of 18 would be appropriate. Do not look at the dataset to find the oldest or youngest person and record his or her age in the metadata.
+Remember it is important to fill in the metadata <i>as though you have never seen the data</i>. For example, if there is an age variable in the dataset, a lower bound of 0 and an upper bound of 100 are reasonable guesses for the range of ages in any dataset.  If on the other hand, it is public information that the dataset is a survey of US voters, then putting an age lower bound of 18 would be appropriate. Do not look at the dataset to find the oldest or youngest person and record his or her age in the metadata. If this task feels too unnatural, we recommend asking a research assistant to fill in the metadata. This should be somebody who has never seen the raw data but it familiar with how it was collected and the names of the variables. 
 </p>
 </div>
 
 <div id="accuracy">
 <h4>Accuracy and Beta</h4>
 <p>
-Every statistic that is added has an associated accuracy value. This is a theoretical bound on the worst-case error for the current parameters set for the statistic. There is a beta parameter that represents the probability that the error in the final computed statistics exceeds the error bound listed in the table. Beta is set at a default of .05 and can be changed. The interpretation of these accuracies differs across statistics. If "accuracy" is the number reported in the accuracy column of the table and n is  the number of people in the dataset, then the accuracies should be interpreted in the following ways for each statistic: 
+Every statistic that is added has an associated accuracy value. This is a theoretical bound on the worst-case error for the current parameters set for the statistic. There is a beta (&beta;) parameter that represents the probability that the error in the final computed statistics exceeds the error bound listed in the table. Beta is set at a default of .05 and can be changed. The interpretation of these accuracies differs across statistics. If "accuracy" is the number reported in the accuracy column of the table and n is the number of people in the dataset, then the accuracies should be interpreted in the following ways for each statistic: 
 </p>
 <p>
-<b>Mean:</b>   With probability 1-Beta,   true answer - accuracy*n <= output mean  <= truth + accuracy*n
+<b>Mean:</b>   With probability 1-&beta;,   true mean - accuracy*n &le; output mean  &le; true mean + accuracy*n
 </p>
 <p>
-<b>Quantiles:</b> With probability 1-Beta for every t the algorithm's output count of the number of data points less than t satisfies:    true count - accuracy*n <= output count <= true count + accuracy*n
+<b>Quantiles:</b>For every t the algorithm's output count of the number of data points less than t satisfies the following with probability 1-&beta;     true count - accuracy*n &le; output count &le; true count + accuracy*n
 </p>
 <p>
-<b>Histogram:</b> For each bar in the outputted bar graph, with probability 1-Beta,  true count-accuracy*n <= output count on that bar <= true count + accuracy*n
+<b>Histogram:</b> For each bar in the outputted bar graph, with probability 1-&beta;,  true count-accuracy*n &le; output count on that bar &le; true count + accuracy*n
 </p>
 <p>
 At any time you may request that certain statistics be made more or less accurate by editing the accuracy column. This will result in a reapportioning of  the global epsilon across all of the statistics. There are limits to how accurate the statistics can be. This tool uses an optimal composition theorem for differential privacy to ensure that the statistics are as accurate as possible while maintaining the global privacy guarantee. 
