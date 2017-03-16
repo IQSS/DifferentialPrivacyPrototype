@@ -50,62 +50,111 @@
 </table>
 </div>
 
+
+
+
     <div class="flex-container">
         <header>
-<div title="This is the name, in Dataverse, of the selected example dataset." id="datasetName" style="text-align:center;">
-  <h2 style="display:inline;">Dataset Name</h2>
-</div>
-            <h4 title="These are adjustable parameters that define the level of privacy protection guaranteed by the differentially private released statistics.">Privacy Parameters
-            <button type="button" class="manualinfo" data-load-url="psiIntroduction.html" data-toggle="modal" data-target="#myModal" data-id="parameters"><span class="glyphicon glyphicon-question-sign" style="color:#ADD8E6;font-size: 12px;"></span></button>
-            </h4>
+            <table style="width:100%">
+              <tr>
+                
+                <td style=''>
+                    <div title="This is the name, in Dataverse, of the selected example dataset." id="datasetName" style="text-align:center;">
+                        <h2 style="display:inline;">Dataset Name</h2>
+                    </div>
+                </td>
 
-            <table align="center">
+                <td style=''>
+                                <h4 title="These are adjustable parameters that define the level of privacy protection guaranteed by the differentially private released statistics." style="display: inline-block; padding-right:5px;"> Privacy Loss Parameters</h4> 
+                                <button id="edit_button" style='color:#108db7;' onclick="edit_parameters_window()">Edit Parameters</button>
+                                <button type="button" class="manualinfo" data-load-url="psiIntroduction.html" data-toggle="modal" data-target="#myModal" data-id="parameters"><span class="glyphicon glyphicon-question-sign" style="color:#ADD8E6;font-size: 12px;"></span></button>
+                                
+
+                        <div id='display_parameters'>
+                        <table align="center">
+                          <tr>
+                            <td style="text-align:right; padding-right: 15px;">
+                              Epsilon (&epsilon;):
+                            </td>
+                            <td style="text-align:left;">
+                              0.1000
+                            </td>
+                          </tr>
+                          <tr>
+                            <td style="text-align:right; padding-right: 15px;">
+                              Delta (&delta;):
+                            </td>
+                            <td style="text-align:left;">
+                              1&times;10<sup>-6</sup>
+                            </td>
+                          </tr>
+                        </table>
+                    </div>
+                </td>
+                
+              </tr>
+            </table>
+
+
+
+                           <!--  <div title="This is the name, in Dataverse, of the selected example dataset." id="datasetName" style="text-align:center;">
+                        <h2 style="display:inline;">Dataset Name</h2>
+                    </div>
+                        
+                    <h4 title="These are adjustable parameters that define the level of privacy protection guaranteed by the differentially private released statistics.">
+                        Privacy Parameters
+                        <button type="button" class="manualinfo" data-load-url="psiIntroduction.html" data-toggle="modal" data-target="#myModal" data-id="parameters"><span class="glyphicon glyphicon-question-sign" style="color:#ADD8E6;font-size: 12px;"></span></button>
+                    </h4> -->
+
+ <!--            <table align="center">
                 <tr>
                     <td title="Epsilon from definition of differential privacy. Smaller values correspond to more privacy.">
                         Epsilon (&epsilon;)
                     </td>
                     <td title = "Delta from definition of differential privacy. Smaller values correspond to more privacy.">
                         Delta (&delta;)
-                    </td>
-                    <td title="Probability that the error for a given statistic exceeds the estimate reported in the Accuracy column." style="padding:0 15px 0 15px;" >
+                    </td> -->
+                    <!-- <td title="Probability that the error for a given statistic exceeds the estimate reported in the Accuracy column." style="padding:0 15px 0 15px;" >
                         Beta (&Beta;)
-                    </td>
+                    </td> -->
 
-                    <td title="Is the data a random and secret sample from a larger population of known size? Here, secret means that the choice of the people in the sample has not been revealed. If this is the case, you can improve the accuracy of your statistics without changing the privacy guarantee. Estimate the size of the larger population. It is important to be conservative in your estimate. In other words, it is okay underestimate but could violate privacy if you overestimate.">
+<!--                     <td title="Is the data a random and secret sample from a larger population of known size? Here, secret means that the choice of the people in the sample has not been revealed. If this is the case, you can improve the accuracy of your statistics without changing the privacy guarantee. Estimate the size of the larger population. It is important to be conservative in your estimate. In other words, it is okay underestimate but could violate privacy if you overestimate.">
                         Secrecy of the Sample
-                    </td>
-                    <td title="When using secrecy of the sample, you get a boost in epsilon, which is represented here. This value can only be edited by changing the epsilon or secrecy of the sample fields.">
+                    </td> -->
+                    <!-- <td title="When using secrecy of the sample, you get a boost in epsilon, which is represented here. This value can only be edited by changing the epsilon or secrecy of the sample fields.">
                         Functioning Epsilon
                     </td>
                     <td title="When using secrecy of the sample, you get a boost in delta, which is represented here. This value can only be edited by changing the delta or secrecy of the sample fields.">
                         Functioning Delta
-                    </td>
+                    </td> -->
 
-                </tr>
-                <tr>
-                    <td>
-                        <input name="epsilon" onfocusout="global_parameters_epsilon(this)" title="Epsilon from definition of differential privacy. Smaller values correspond to more privacy." value="0.1" style="color: black;" type="text" placeholder="Epsilon">
+<!--                 </tr>
+                <tr> -->
+<!--                     <td>
+                        <input name="epsilon" onfocusout="global_parameters_epsilon(this)" title="Epsilon from definition of differential privacy. Smaller values correspond to more privacy." value="0.1" style="color: black;" type="text" placeholder="Epsilon" readonly>
                     </td>
                     <td>
-                        <input name="delta" onfocusout="global_parameters_delta(this)"  title = "Delta from definition of differential privacy. Smaller values correspond to more privacy." value="0.000001" style="color: black;" type="text" placeholder="Delta">
-                    </td>
-                    <td style="padding:0 15px 0 0;">
-                        <input name="beta" onfocusout="global_parameters_beta(this)" title="Probability that the error for a given statistic exceeds the estimate reported in the Accuracy column." value="0.05" style="color: black;" type="text" placeholder="Beta">
-                    </td>
+                        <input name="delta" onfocusout="global_parameters_delta(this)"  title = "Delta from definition of differential privacy. Smaller values correspond to more privacy." value="0.000001" style="color: black;" type="text" placeholder="Delta" readonly>
+                    </td> -->
+                    <!-- <td style="padding:0 15px 0 0;">
+                        <input name="beta" onfocusout="global_parameters_beta(this)" title="Probability that the error for a given statistic exceeds the estimate reported in the Accuracy column." value="0.05" style="color: black;" type="text" placeholder="Beta" readonly>
+                    </td> -->
 
-                    <td style="padding:0 15px 0 0;">
+<!--                     <td>
                         <input id="SS" name="SS" onfocusout="global_parameters_SS(this)" title="Is the data a random and secret sample from a larger population of known size? Here, secret means that the choice of the people in the sample has not been revealed. If this is the case, you can improve the accuracy of your statistics without changing the privacy guarantee. Estimate the size of the larger population. It is important to be conservative in your estimate. In other words, it is okay underestimate but could violate privacy if you overestimate." value="" style="color: black;" type="text" placeholder="">
-                        <input title="Remove any entered value for the secrecy of the sample, and revert privacy parameters to the values without adjustment." type="button" style="color:gray;" onclick="clear_SS()" value="Clear">
+                    </td> -->
+                    <!-- <td>
+                    <input title="Remove any entered value for the secrecy of the sample, and revert privacy parameters to the values without adjustment." type="button" style="color:gray;" onclick="clear_SS()" value="Clear">
                     </td>
                     <td>
                         <input id="FE" name="FE" title="When using secrecy of the sample, you get a boost in epsilon, which is represented here. This value can only be edited by changing the epsilon or secrecy of the sample fields." value="" style="color: black;" type="text" placeholder="none if no Sec. Sample" readonly>
                     </td>
                     <td>
                         <input id="FD" name="FD" title="When using secrecy of the sample, you get a boost in delta, which is represented here. This value can only be edited by changing the delta or secrecy of the sample fields." value="" style="color: black;" type="text" placeholder="none if no Sec. Sample" readonly>
-                    </td>
+                    </td> -->
 
-                </tr>
-            </table>
+<!--                 </tr>
+            </table> -->
 
          </header>
 
@@ -134,11 +183,66 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal">&times;</button>
-                    <h3 class="modal-title">PSI (&Psi;): a Private data Sharing Interface</h3>
+                    <h3 class="modal-title" style="text-align: center;"> <img src="../images/dpr.png" width="200" > PSI (&Psi;): a Private data Sharing Interface</h3>
                 </div>
                 <div class="modal-body">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div> 
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="myModal3">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h3 class="modal-title" style="text-align: center;"> <img src="../images/dpr.png" width="200" > PSI (&Psi;): a Private data Sharing Interface</h3>
+                </div>
+                <div style="margin:15px;">
+                <div>
+                If you were an actual researcher depositing your own data, first we would ask you to affirm some characteristics of your data:
+                    <div style="border: 1px solid green; margin:15px; padding:20px;">
+                        <input type="checkbox" checked> Your dataset must be tabular with rows corresponding to subjects and columns corresponding to variables. </br>
+                        <input type="checkbox" checked> There should not be any missing values (empty cells in the table).</br>
+                        <input type="checkbox" checked> It is assumed that the total number of observations (rows) in the dataset is public information and can be released. This value is not treated in a privacy preserving manner.</br>
+                       <!-- <input type="checkbox" checked> The observations of the data are assumed to be independent, that is, the data of any one subject affects at most one record. </br> -->
+                        <div style="text-align:center; padding-top: 10px;">
+                            <button type="button" class="btn btn-default">Confirm</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div>
+                Then we would ask you to supply values of parameters measuring allowable privacy loss. Below is an example of what the editing parameters interface looks like.  You can't edit the parameters here, but you can once you enter the prototype:
+                    <div style="border: 1px solid green; margin:15px; padding-top:20px;padding-bottom:20px;">
+                        <table align="center" style=""><td style="text-align:right; padding-right: 15px;"><span title="Epsilon from definition of differential privacy. Smaller values correspond to more privacy.">Epsilon (&epsilon;):</span></td><td style="padding-left: 15px;"><input name="epsilon" title="Epsilon from definition of differential privacy. Smaller values correspond to more privacy." value=0.1 style="color: black;" type="text" placeholder="Epsilon" readonly></td></tr><tr><td style="text-align:right; padding-right: 15px;"><span title = "Delta from definition of differential privacy. Smaller values correspond to more privacy.">Delta (&delta;):</span></td><td style="padding-left: 15px;"><input name="delta" title = "Delta from definition of differential privacy. Smaller values correspond to more privacy." value=0.000001 style="color: black;" type="text" placeholder="Delta" readonly> <input title="Use exponential notation to enter in delta as delta is normally very small and using exponential notation to convey it is more convenient." type="button" style="color:gray;" value="Use Exponential Notation"></td></tr><tr><td style="text-align:right; padding-right: 15px;"><span title="Is the data a random and secret sample from a larger population of known size? Here, secret means that the choice of the people in the sample has not been revealed. If this is the case, you can improve the accuracy of your statistics without changing the privacy guarantee. Estimate the size of the larger population. It is important to be conservative in your estimate. In other words, it is okay underestimate but could violate privacy if you overestimate.">Secrecy of the Sample:</span></td><td style="padding-left: 15px;"><input name="SS" title="Is the data a random and secret sample from a larger population of known size? Here, secret means that the choice of the people in the sample has not been revealed. If this is the case, you can improve the accuracy of your statistics without changing the privacy guarantee. Estimate the size of the larger population. It is important to be conservative in your estimate. In other words, it is okay underestimate but could violate privacy if you overestimate." value="" style="color: black;" type="text" placeholder="" readonly> <input title="Remove any entered value for the secrecy of the sample, and revert privacy parameters to the values without adjustment." type="button" style="color:gray;" value="Clear"></td></tr></table><div style="text-align:center; padding-top: 10px;"><button type="button" class="btn btn-default">Submit</button></div>
+                    </div>
+                </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div> 
+            </div>
+        </div>
+    </div>
+
+
+
+    <div class="modal fade" id="myModal2">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h3 class="modal-title">PSI (&Psi;): Editing Parameters</h3>
+                </div>
+                <div id="modal-body-edit-window" class="modal-body">
                 </div>  
                 <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal" onclick="edit_window_closed()">Submit</button>
                     <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
                 </div> 
             </div>
@@ -151,6 +255,7 @@
         <div>
             <button title="This shows the full underlying table that is being constructed, containing all the metadata information, and budgeting of epsilon and accuracies." onclick='report();' style="color:gray;">Show Underlying Table</button>
             <button title="This button creates a differentially private release of the statistics presently requested, at their budgeted values of the privacy parameters." onclick='submit();' style="color:red;">Submit Table and Generate Differentially Private Release</button>
+
             <button type="button" class="manualinfo" data-load-url="psiIntroduction.html" data-toggle="modal" data-target="#myModal" data-id="submit"><span class="glyphicon glyphicon-question-sign" style="color:#A3CEDC;font-size: 12px;"></span></button>
             <br>
             PSI (&Psi;): a Private data Sharing Interface
@@ -186,7 +291,7 @@
         // open the modal window on page load
         $(window).load(function(){
         $('#myModal').modal('show');
-        $('#myModal').find('.modal-body').load("psiIntroduction.html");
+        $('#myModal').find('.modal-body').load("psiOpenPrototype.html");
         });
     </script> 
 
