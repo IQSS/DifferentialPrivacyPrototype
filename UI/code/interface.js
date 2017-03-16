@@ -402,7 +402,7 @@ function talktoR(action, variable, stat) {
    }
 
    console.log(jsonout)
-   urlcall = base+"privateAccuracies";
+   urlcall = base+"privateAccuraciesapp";
    console.log("urlcall out: ", urlcall);
    makeCorsRequest(urlcall, btn, estimateSuccess, estimateFail, jsonout);  
 } 
@@ -491,7 +491,7 @@ function talktoRtwo(btn) {
    }
 
 	console.log(jsonout)
-    urlcall = base+"privateStatistics";
+    urlcall = base+"privateStatisticsapp";
     console.log("urlcall out: ", urlcall);
   
     makeCorsRequest(urlcall, btn, statisticsSuccess, estimateFail, jsonout);
