@@ -195,7 +195,7 @@ if(possibleUI){
   var element = document.getElementById("setdataset");     // delete the dataset selection header
   element.outerHTML = "";
   delete element;
-  fileid = 20;                                             // define the default dataset as PUMS
+  fileid = 5265;                                             // define the default dataset as PUMS
 }else{
   if(possiblefileid){
   	fileid = location.href.match(/[?&]fileid=(.*?)[$&]/)[1];   	// get fileid from URL 
