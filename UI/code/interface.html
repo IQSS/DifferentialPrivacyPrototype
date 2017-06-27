@@ -292,18 +292,23 @@
         var button = $(event.relatedTarget);
         var loadurl = button.data('load-url');
         var section = button.data('id');
-        // load in the page content from separate document
-        $(this).find('.modal-body').load(loadurl);
 
+        console.log(button);
+        console.log(loadurl);
+        console.log(section);
+
+        // load in the page content from separate document, calculate offset and scroll in the callback
+        $(this).find('.modal-body').load(loadurl, function(){     
         //scroll the container
-        if (typeof section !== 'undefined') {
-            var sectionOffset = $('#' + section).offset();
-            // get the top of the section
-            console.log(sectionOffset);
-            $('#myModal .modal-body').animate({
-                scrollTop: sectionOffset.top -100
-            }, "fast");
-        };
+            if (typeof section !== 'undefined') {
+                var sectionOffset = $('#' + section).offset();
+                // get the top of the section
+                console.log(sectionOffset);
+                $('#myModal .modal-body').animate({
+                    scrollTop: sectionOffset.top -150
+                }, "fast");
+            };
+        });
         });
     </script> 
     <script type="text/javascript" src="interface.js"></script> 
