@@ -10,6 +10,9 @@
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>  
     <script type="text/javascript" src="../lib/d3.v3.min.js"></script>
 
+    <link rel="stylesheet" type="text/css" href="https://rawgit.com/mitsos1os/bootstrap-slider/master/dist/css/bootstrap-slider.min.css">
+    <script type="text/javascript" src="https://rawgit.com/mitsos1os/bootstrap-slider/master/dist/bootstrap-slider.min.js"></script>
+
     <!-- Linking to CSS stylesheet -->
     <link rel="stylesheet" type="text/css" href="interface.css">
     
@@ -106,56 +109,6 @@
                         <button type="button" class="manualinfo" data-load-url="psiIntroduction.html" data-toggle="modal" data-target="#myModal" data-id="parameters"><span class="glyphicon glyphicon-question-sign" style="color:#ADD8E6;font-size: 12px;"></span></button>
                     </h4> -->
 
- <!--            <table align="center">
-                <tr>
-                    <td title="Epsilon from definition of differential privacy. Smaller values correspond to more privacy.">
-                        Epsilon (&epsilon;)
-                    </td>
-                    <td title = "Delta from definition of differential privacy. Smaller values correspond to more privacy.">
-                        Delta (&delta;)
-                    </td> -->
-                    <!-- <td title="Probability that the error for a given statistic exceeds the estimate reported in the Accuracy column." style="padding:0 15px 0 15px;" >
-                        Beta (&Beta;)
-                    </td> -->
-
-<!--                     <td title="Is the data a random and secret sample from a larger population of known size? Here, secret means that the choice of the people in the sample has not been revealed. If this is the case, you can improve the accuracy of your statistics without changing the privacy guarantee. Estimate the size of the larger population. It is important to be conservative in your estimate. In other words, it is okay underestimate but could violate privacy if you overestimate.">
-                        Secrecy of the Sample
-                    </td> -->
-                    <!-- <td title="When using secrecy of the sample, you get a boost in epsilon, which is represented here. This value can only be edited by changing the epsilon or secrecy of the sample fields.">
-                        Functioning Epsilon
-                    </td>
-                    <td title="When using secrecy of the sample, you get a boost in delta, which is represented here. This value can only be edited by changing the delta or secrecy of the sample fields.">
-                        Functioning Delta
-                    </td> -->
-
-<!--                 </tr>
-                <tr> -->
-<!--                     <td>
-                        <input name="epsilon" onfocusout="global_parameters_epsilon(this)" title="Epsilon from definition of differential privacy. Smaller values correspond to more privacy." value="0.1" style="color: black;" type="text" placeholder="Epsilon" readonly>
-                    </td>
-                    <td>
-                        <input name="delta" onfocusout="global_parameters_delta(this)"  title = "Delta from definition of differential privacy. Smaller values correspond to more privacy." value="0.000001" style="color: black;" type="text" placeholder="Delta" readonly>
-                    </td> -->
-                    <!-- <td style="padding:0 15px 0 0;">
-                        <input name="beta" onfocusout="global_parameters_beta(this)" title="Probability that the error for a given statistic exceeds the estimate reported in the Accuracy column." value="0.05" style="color: black;" type="text" placeholder="Beta" readonly>
-                    </td> -->
-
-<!--                     <td>
-                        <input id="SS" name="SS" onfocusout="global_parameters_SS(this)" title="Is the data a random and secret sample from a larger population of known size? Here, secret means that the choice of the people in the sample has not been revealed. If this is the case, you can improve the accuracy of your statistics without changing the privacy guarantee. Estimate the size of the larger population. It is important to be conservative in your estimate. In other words, it is okay underestimate but could violate privacy if you overestimate." value="" style="color: black;" type="text" placeholder="">
-                    </td> -->
-                    <!-- <td>
-                    <input title="Remove any entered value for the secrecy of the sample, and revert privacy parameters to the values without adjustment." type="button" style="color:gray;" onclick="clear_SS()" value="Clear">
-                    </td>
-                    <td>
-                        <input id="FE" name="FE" title="When using secrecy of the sample, you get a boost in epsilon, which is represented here. This value can only be edited by changing the epsilon or secrecy of the sample fields." value="" style="color: black;" type="text" placeholder="none if no Sec. Sample" readonly>
-                    </td>
-                    <td>
-                        <input id="FD" name="FD" title="When using secrecy of the sample, you get a boost in delta, which is represented here. This value can only be edited by changing the delta or secrecy of the sample fields." value="" style="color: black;" type="text" placeholder="none if no Sec. Sample" readonly>
-                    </td> -->
-
-<!--                 </tr>
-            </table> -->
-
          </header>
 
         <!-- Variable Selection -->
@@ -174,7 +127,19 @@
         </article>
 
         <!-- Epsilon Sidebar Table -->
-        <nav id="epsilon_sidebar" class="epsilon_sidebar"></nav>
+        <nav id="epsilon_sidebar" class="epsilon_sidebar">
+            <div id="epsilon_sidebar_top"></div>
+            <div id="epsilon_sidebar_bottom">
+                <div style="text-align:center">
+                  Slide to reserve budget for future users </br> (This will reduce the spendable budget in the current session)
+                  <br>
+                  <input style="width:90%;" id="re_slider" data-slider-id="RES" type="text" data-slider-min="0" data-slider-max="100" data-slider-step="1" data-slider-value="0" />
+                  <br>
+                  <span id="re_label">Reserved Epsilon: <span id="re_value">0</span>%</span>
+                  <button type='button' class='manualinfo' data-load-url='psiIntroduction.html' data-toggle='modal' data-target='#myModal' data-id='reserve'><span class='glyphicon glyphicon-question-sign' style='color:#ADD8E6;font-size:12px;'></span></button>
+                </div>
+            </div>       
+        </nav>
     </div>
 
     <!-- Modal -->
@@ -193,7 +158,7 @@
             </div>
         </div>
     </div>
-
+<!-- 
     <div class="modal fade" id="myModal3">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
@@ -208,7 +173,6 @@
                         <input type="checkbox" checked> Your dataset must be tabular with rows corresponding to subjects and columns corresponding to variables. </br>
                         <input type="checkbox" checked> There should not be any missing values (empty cells in the table).</br>
                         <input type="checkbox" checked> It is assumed that the total number of observations (rows) in the dataset is public information and can be released. This value is not treated in a privacy preserving manner.</br>
-                       <!-- <input type="checkbox" checked> The observations of the data are assumed to be independent, that is, the data of any one subject affects at most one record. </br> -->
                         <div style="text-align:center; padding-top: 10px;">
                             <button type="button" class="btn btn-default">Confirm</button>
                         </div>
@@ -230,7 +194,63 @@
         </div>
     </div>
 
+-->
+ <!-- JM Revised text below: -->
+    <div class="modal fade" id="myModal3">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h3 class="modal-title" style="text-align: center;"> <img src="../images/dpr.png" width="200" > PSI (&Psi;): a Private data Sharing Interface</h3>
+                </div>
+               
+                <div style="margin:15px; overflow:auto; height:600px;">
+                <!-- blocked for UI/UX
+                <div>
+               Please affirm the following characteristics of your dataset: 
+                    <div style="border: 1px solid green; margin:15px; padding:20px;">
+                        <input type="checkbox" checked> This dataset is tabular with rows corresponding to individuals and columns corresponding to variables (attributes). </br>
+                        <input type="checkbox" checked> There are no missing values in the data (empty cells in the table).</br>
+                        <input type="checkbox" checked> The total number of observations (rows) in the dataset is public information and can be released. This value is not treated in a privacy preserving manner.</br>
+                        <div style="text-align:center; padding-top: 10px;">
+                            <button type="button" class="btn btn-default">Confirm</button>
+                        </div>
+                    </div>
+                </div>
+               -->
+                <div>
+                <h4>Privacy Loss Parameters</h4>
+               The level of privacy protection for individuals in the dataset is governed by two <q>privacy loss parameters</q>, &epsilon; and &delta;. &delta; can be thought of as the probability of a blatant privacy violation and so should be quite small.  &epsilon; should be set to a small constant. Larger &epsilon; corresponds to less privacy and more accurate statistics. We do not recommend &epsilon; exceeding 1. Below is Harvard's list of varying levels of sensitivity for datasets and reasonable privacy loss parameters for each level. The recommendations below are just a guideline. See <a href="http://files.vpr.harvard.edu/files/vpr-documents/files/data_classification_table_abridged_7.23.13_0.pdf" target="_blank">Harvard's secure data classifications</a> for more information.
+               <p>
+                <ol>
+ 				    <li>Public information: It is not necessary to use differential privacy for public information.</li>
+  					<li>Information the disclosure of which would not cause material harm, but which the University has chosen to keep confidential: (&epsilon;=1, &delta;=10<sup>-5</sup>)</li>
+                    <li>Information that could cause risk of material harm to individuals or the University if disclosed: (&epsilon;=.25, &delta;=10<sup>-6</sup>)</li>
+                    <li>Information that would likely cause serious harm to individuals or the University if disclosed: (&epsilon;=.05, &delta;=10<sup>-7</sup>)</li>
+                	<li>Information that would cause severe harm to individuals or the University if disclosed: It is not recommended that the PSI tool be used with such severely sensitive data.</li>
+                </ol> 
+               </p>
+               
+               <h4>Secrecy of the Sample</h4>
+				<p>
+				If the data is a random and secret sample from a larger population of known size, then the accuracy of the released statistics can be boosted without changing the privacy guarantee.   Here, secret means that the choice of the people in the sample will not be revealed.
+				</p>
+				<p>
+				This boost requires an estimate of the size of the larger population. It is important to be conservative in your estimate. In other words, it is okay to underestimate but could violate privacy if you overestimate.
+				</p>
+				<p>
+                Set the privacy loss parameters for your dataset below and if secrecy of the sample applies to your data, estimate the size of the population from which it was drawn:
+				</p>
+                </div>
+                    <div style="border: 1px solid green; margin:15px; padding-top:20px;padding-bottom:20px;">
+                        <table align="center" style=""><td style="text-align:right; padding-right: 15px;"><span title="Epsilon from definition of differential privacy. Smaller values correspond to more privacy.">Epsilon (&epsilon;):</span></td><td style="padding-left: 15px;"><input name="epsilon" title="Epsilon from definition of differential privacy. Smaller values correspond to more privacy." value=0.1 style="color: black;" type="text" placeholder="Epsilon" onfocusout="epsilon_check(this)"></td></tr><tr><td style="text-align:right; padding-right: 15px;"><span title = "Delta from definition of differential privacy. Smaller values correspond to more privacy.">Delta (&delta;):</span></td><td style="padding-left: 15px;"><input name="delta" title = "Delta from definition of differential privacy. Smaller values correspond to more privacy." value=0.000001 style="color: black;" type="text" placeholder="Delta" onfocusout="delta_check(this)"> <input title="Use exponential notation to enter in delta as delta is normally very small and using exponential notation to convey it is more convenient." type="button" style="color:gray;" value="Use Exponential Notation"></td></tr><tr><td style="text-align:right; padding-right: 15px;"><span title="Is the data a random and secret sample from a larger population of known size? Here, secret means that the choice of the people in the sample has not been revealed. If this is the case, you can improve the accuracy of your statistics without changing the privacy guarantee. Estimate the size of the larger population. It is important to be conservative in your estimate. In other words, it is okay underestimate but could violate privacy if you overestimate.">Secrecy of the Sample:</span></td><td style="padding-left: 15px;"><input name="SS" title="Is the data a random and secret sample from a larger population of known size? Here, secret means that the choice of the people in the sample has not been revealed. If this is the case, you can improve the accuracy of your statistics without changing the privacy guarantee. Estimate the size of the larger population. It is important to be conservative in your estimate. In other words, it is okay underestimate but could violate privacy if you overestimate." value="" style="color: black;" type="text" placeholder="" onfocusout="global_parameters_SS(this)"> <input title="Remove any entered value for the secrecy of the sample, and revert privacy parameters to the values without adjustment." type="button" style="color:gray;" value="Clear"></td></tr></table><div style="text-align:center; padding-top: 10px;"><button type="button" class="btn btn-default" onclick="edit_window_closed()" data-dismiss="modal">Submit</button></div>
+                    </div>
+                </div>
+                </div>
 
+            </div>
+        </div>
+    </div>
 
     <div class="modal fade" id="myModal2">
         <div class="modal-dialog" role="document">
@@ -253,8 +273,8 @@
     <!--Table and Submit Buttons in Footer -->
     <footer>
         <div>
-            <button title="This shows the full underlying table that is being constructed, containing all the metadata information, and budgeting of epsilon and accuracies." onclick='report();' style="color:gray;">Show Underlying Table</button>
-            <button title="This button creates a differentially private release of the statistics presently requested, at their budgeted values of the privacy parameters." onclick='submit();' style="color:red;">Submit Table and Generate Differentially Private Release</button>
+       <!-- JM blocked for UI     <button title="This shows the full underlying table that is being constructed, containing all the metadata information, and budgeting of epsilon and accuracies." onclick='report();' style="color:gray;">Show Underlying Table</button> -->
+            <button title="This button creates a differentially private release of the statistics presently requested, at their budgeted values of the privacy parameters." onclick='submit();' style="color:red;">Submit Statistics and Generate Differentially Private Release</button>
 
             <button type="button" class="manualinfo" data-load-url="psiIntroduction.html" data-toggle="modal" data-target="#myModal" data-id="submit"><span class="glyphicon glyphicon-question-sign" style="color:#A3CEDC;font-size: 12px;"></span></button>
             <br>
@@ -288,10 +308,16 @@
     </script> 
     <script type="text/javascript" src="interface.js"></script> 
     <script type="text/javascript">
+        console.log("show this here");
+        console.log(UI);  // UI set from url in interface.js
         // open the modal window on page load
         $(window).load(function(){
         $('#myModal').modal('show');
-        $('#myModal').find('.modal-body').load("psiOpenPrototype.html");
+        if(UI){
+            $('#myModal').find('.modal-body').load("psiOpen.html"); //JM for UI/UX
+        }else{
+            $('#myModal').find('.modal-body').load("psiOpenPrototype.html");
+        };
         });
     </script> 
 

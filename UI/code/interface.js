@@ -14,12 +14,12 @@
 
 // JSON data of r-libraries and functions (Fanny's work will provide these)
 var JSON_file = '{"rfunctions":[' +
-    '{"statistic": "Mean", "stat_info": "Average", "statistic_type": [{"stype": "Numerical", "parameter": ["Lower Bound", "Upper Bound"]}, {"stype": "Boolean", "parameter": []}]},' + 
-    '{"statistic": "Histogram", "stat_info": "Frequency", "statistic_type": [{"stype": "Numerical", "parameter": ["Lower Bound", "Upper Bound", "Number of Bins"]}, {"stype": "Categorical", "parameter": ["Bin Names"]}]},' +
+    '{"statistic": "Mean", "stat_info": "Release the arithmetic mean of the chosen variable", "statistic_type": [{"stype": "Numerical", "parameter": ["Lower Bound", "Upper Bound"]}, {"stype": "Boolean", "parameter": []}]},' + 
+    '{"statistic": "Histogram", "stat_info": "Release counts of the categories represented in the chosen variable", "statistic_type": [{"stype": "Numerical", "parameter": ["Lower Bound", "Upper Bound", "Number of Bins"]}, {"stype": "Categorical", "parameter": ["Bin Names"]}]},' +
     // '{"statistic": "Causal Inference", "stat_info": "Inferences", "statistic_type": [{"stype": "Numerical", "parameter": ["Lower Bound", "Upper Bound", "Treatment Variable"]}, {"stype": "Boolean", "parameter": ["Treatment Variable"]}]},' +     
-    '{"statistic": "Quantile", "stat_info": "Range", "statistic_type": [{"stype": "Numerical", "parameter": ["Lower Bound", "Upper Bound", "Granularity"]}]} ],' +
-    '"type_label": [ {"stype": "Numerical", "type_info": "Numbers"}, {"stype": "Boolean", "type_info": "True or False"}, {"stype": "Categorical", "type_info": "Categories"} ],' +
-    '"parameter_info": [ {"parameter": "Lower Bound", "entry_type": "number", "pinfo": "Lowest Value", "input_type": "text"}, {"parameter": "Upper Bound", "entry_type": "number", "pinfo": "Highest Value", "input_type": "text"}, {"parameter": "Number of Bins", "entry_type": "pos_integer", "pinfo": "Number of Categories", "input_type": "text"}, {"parameter": "Granularity", "entry_type": "pos_integer", "pinfo": "Spread", "input_type": "text"}, {"parameter": "Treatment Variable", "entry_type": "none", "pinfo": "Other axis variable", "input_type": "multiple_choice_with_other_variables"}, {"parameter": "Bin Names", "entry_type": "none", "pinfo": "Give the names of all the bins", "input_type": "text"} ] }';
+    '{"statistic": "Quantile", "stat_info": "Release a cumulative distribution function at the given level of granularity (can extract median, percentiles, quartiles, etc from this).", "statistic_type": [{"stype": "Numerical", "parameter": ["Lower Bound", "Upper Bound", "Granularity"]}]} ],' +
+    '"type_label": [ {"stype": "Numerical", "type_info": "Data should be treated as numbers"}, {"stype": "Boolean", "type_info": "Data contains two possible categories"}, {"stype": "Categorical", "type_info": "Datapoints should be treated as categories/bins"} ],' +
+    '"parameter_info": [ {"parameter": "Lower Bound", "entry_type": "number", "pinfo": "Minimum value that the chosen variable can take on", "input_type": "text"}, {"parameter": "Upper Bound", "entry_type": "number", "pinfo": "Maximum value that the chosen variable can take on", "input_type": "text"}, {"parameter": "Number of Bins", "entry_type": "pos_integer", "pinfo": "Number of distinct categories the variable can take on", "input_type": "text"}, {"parameter": "Granularity", "entry_type": "pos_integer", "pinfo": "The minimum positive distance between two different records in the data", "input_type": "text"}, {"parameter": "Treatment Variable", "entry_type": "none", "pinfo": "Other axis variable", "input_type": "multiple_choice_with_other_variables"}, {"parameter": "Bin Names", "entry_type": "none", "pinfo": "Give the names of all the bins", "input_type": "text"} ] }';
 
 // , "function": "none"
 // multiple_choice_with_other_variables
@@ -55,11 +55,6 @@ var previous_inputted_metadata = {};
 var global_size = 0;
 var SS_value_past = "";
 
-// secrecy of sample/global variable * e or * d
-
-var global_fe = "";
-var global_fd = "";
-
 var varColor = '#f0f8ff';   //d3.rgb("aliceblue");
 var selVarColor = '#fa8072';    //d3.rgb("salmon");
 
@@ -90,8 +85,14 @@ var variable_unselected_class =
 var global_epsilon = 0.1;
 var global_delta = 0.000001;
 var global_beta = 0.05;
-
-
+var reserved_epsilon = 0;
+var reserved_delta = 0;
+var global_sliderValue = 0;
+var reserved_epsilon_toggle = false;
+// secrecy of sample/global variable * e or * d
+//JM: changed functioning epsilon and delta to default to global eps and del
+var global_fe = global_epsilon;
+var global_fd = global_delta;
 
 // List of possible statisitics
 var statistic_list = [];
@@ -171,29 +172,47 @@ console.log(variable_list);
 //////////////
 // Globals
 
-var production=true;
-var hostname="";
+var production = true;
+var hostname = "";
 var metadataurl = "";
 var ddiurl = "";
 
 var dataverse_available = true;  // When Dataverse repository goes down, or is otherwise unavailable, this is a quick override for searching for metadata by url.
 
 // Set the fileid (Dataverse reference number) for dataset to use 
-
 var fileid = "";
 var possiblefileid = location.href.match(/[?&]fileid=(.*?)[$&]/);
 console.log(possiblefileid);
-if(possiblefileid){
+
+
+// Move between UI test and prototype modes
+var UI = false;
+var possibleUI = location.href.match(/[?&]UI=(.*?)[$&]/);
+console.log(possibleUI);
+if(possibleUI){
+  UI = true;
+  console.log("switching from prototype to test mode");
+  var element = document.getElementById("setdataset");     // delete the dataset selection header
+  element.outerHTML = "";
+  delete element;
+  fileid = 20;                                             // define the default dataset as PUMS
+}else{
+  if(possiblefileid){
   	fileid = location.href.match(/[?&]fileid=(.*?)[$&]/)[1];   	// get fileid from URL 
   	$('#dataselect').val(fileid);         						// change value in selector box
-} else {
+  } else {
   	fileid = document.getElementById('dataselect').value;		// get fileid from selector box which will be at default value
+  };
 };
+
 // When beta.dataverse.org is down, need to override getting files live from Repository:
 
 if(!dataverse_available){
   fileid = "";    // This is overriding the lines above that set fileid by the header/selection bar
 }
+
+
+
 
 console.log(fileid)
 
@@ -227,7 +246,8 @@ if (ddiurl) {
 } else {
     // neither a full ddi url, nor file id supplied; use one of the sample DDIs that come with
     // the app, in the data directory:
-    metadataurl="../../data/Census_PUMS5_California_Subsample-ddi.xml";  // This is PUMS example metadata file
+    //metadataurl="../../data/Census_PUMS5_California_Subsample-ddi.xml";  // This is PUMS example metadata file
+    metadataurl="../../data/pumsmetaui.xml"; //For UI/UX
     console.log("Retrieving Metadata Locally");
 }
 
@@ -248,7 +268,7 @@ d3.xml(metadataurl, "application/xml", function(xml) {
     // Set the sample size from the metadata
     
     global_size = caseQnty[0].childNodes[0].nodeValue;
-    global_size = 2000;
+    global_size = 1000; //for ui
     // document.getElementsByName('SS')[0].placeholder='value > ' + global_size;  // set the secrecy of the sample placeholder message
 
     for(var j =0; j < vars.length; j++ ) {
@@ -369,7 +389,7 @@ function talktoR(action, variable, stat) {
      if(json["error"][0] ==="T"){
         alert(json["message"]);
         //undo to previous state of page
-        inputted_metadata = JSON.parse(JSON.stringify(previous_inputted_metadata));
+        inputted_metadata = JSON.parse(JSON.stringify(previous_inputted_metadata)); 
          generate_epsilon_table();
     }
 
@@ -393,16 +413,16 @@ function talktoR(action, variable, stat) {
    function estimateFail(btn) {
      estimated=true;
    }
-
-   if (SS_value_past != "") {
+// JMIdea: change below to just always send functioning
+ //  if (SS_value_past != "") { 
     var jsonout = JSON.stringify({ dict: inputted_metadata, indices: column_index, stats: statistic_list, metadata: metadata_list, globals: {eps: global_fe, del: global_fd, Beta: global_beta, n: global_size}, action: action, variable: variable, stat: stat });
-   }
-   else {
-    var jsonout = JSON.stringify({ dict: inputted_metadata, indices: column_index, stats: statistic_list, metadata: metadata_list, globals: {eps: global_epsilon, del: global_delta, Beta: global_beta, n: global_size}, action: action, variable: variable, stat: stat });
-   }
+ //  }
+   //else {
+    //var jsonout = JSON.stringify({ dict: inputted_metadata, indices: column_index, stats: statistic_list, metadata: metadata_list, globals: {eps: global_epsilon, del: global_delta, Beta: global_beta, n: global_size}, action: action, variable: variable, stat: stat });
+   //}
 
    console.log(jsonout)
-   urlcall = base+"privateAccuraciesapp";
+   urlcall = base+"privateAccuracies";
    console.log("urlcall out: ", urlcall);
    makeCorsRequest(urlcall, btn, estimateSuccess, estimateFail, jsonout);  
 } 
@@ -444,8 +464,10 @@ function splash (releases) {
 }
 
 function submit(){
-	var submit_info = window.open("");  // Have to open in main thread, and then adjust in async callback, as most browsers won't allow new tab creation in async function
-	talktoRtwo(submit_info);  // so we're going to use the btn argument, which is present, but no longer used, to carry the new window object
+	if(confirm("This will finalize your current selections and spend your privacy budget on them. This action cannot be undone.")){
+		var submit_info = window.open("");  // Have to open in main thread, and then adjust in async callback, as most browsers won't allow new tab creation in async function
+		talktoRtwo(submit_info);  // so we're going to use the btn argument, which is present, but no longer used, to carry the new window object
+	}
 }
 
 /////////////////////////////////////////////////////////////////////// 
@@ -482,16 +504,16 @@ function talktoRtwo(btn) {
      estimated=true;
      console.log("ran estimateFail")
    }
-
-   if (SS_value_past != "") {
+// JMIdea always use functioning
+  // if (SS_value_past != "") {
     var jsonout = JSON.stringify({ dict: inputted_metadata, indices: column_index, stats: statistic_list, metadata: metadata_list, globals: {eps: global_fe, del: global_fd, Beta: global_beta, n: global_size}, fileid: fileid });
-   }
-   else {
-    var jsonout = JSON.stringify({ dict: inputted_metadata, indices: column_index, stats: statistic_list, metadata: metadata_list, globals: {eps: global_epsilon, del: global_delta, Beta: global_beta, n: global_size}, fileid: fileid });
-   }
+  // }
+   //else {
+   // var jsonout = JSON.stringify({ dict: inputted_metadata, indices: column_index, stats: statistic_list, metadata: metadata_list, globals: {eps: global_epsilon, del: global_delta, Beta: global_beta, n: global_size}, fileid: fileid });
+   //}
 
 	console.log(jsonout)
-    urlcall = base+"privateStatisticsapp";
+    urlcall = base+"privateStatistics";
     console.log("urlcall out: ", urlcall);
   
     makeCorsRequest(urlcall, btn, statisticsSuccess, estimateFail, jsonout);
@@ -879,17 +901,17 @@ function parameter_fields (variable, type_chosen) {
     needed_parameters = needed_parameters.unique();
 
     // makes blank html text
-    var parameter_field = "";
+    var parameter_field = "<table>";
 
     // uses .unique() to get all unique values and iterate through
     for (j = 0; j < needed_parameters.length; j++) {
       // creates html list in .sort() (alphabet order)
       // parameter_field += "<span title='" + rfunctions.parameter_info[metadata_list.indexOf(needed_parameters[j].replace(/\s/g, '_'))].pinfo + "'>" + needed_parameters[j] + ":</span> <input type='text' value='" + inputted_metadata[variable][column_index[needed_parameters[j].replace(/\s/g, '_')]] + "' name='" + needed_parameters[j].replace(/\s/g, '_') + "'id='input_" + needed_parameters[j].replace(/\s/g, '_') + "_" + variable + "' onfocusin='record_table()' oninput='Parameter_Memory(this,\"" + variable + "\")' onfocusout='ValidateInput(this, \"" + rfunctions.parameter_info[metadata_list.indexOf(needed_parameters[j].replace(/\s/g, '_'))].entry_type + "\", \"" + variable + "\");'><br>";
       
-      parameter_field += "<span title='" + rfunctions.parameter_info[metadata_list.indexOf(needed_parameters[j].replace(/\s/g, '_'))].pinfo + "'>" + needed_parameters[j] + ":</span> ";
+      parameter_field += "<tr><td style='width:150px;vertical-align:middle;'><span title='" + rfunctions.parameter_info[metadata_list.indexOf(needed_parameters[j].replace(/\s/g, '_'))].pinfo + "'>" + needed_parameters[j] + ":</span></td><td style='vertical-align:middle;'>";
 
       if (rfunctions.parameter_info[metadata_list.indexOf(needed_parameters[j].replace(/\s/g, '_'))].input_type == "text") {
-        parameter_field += "<input type='text' value='" + inputted_metadata[variable][column_index[needed_parameters[j].replace(/\s/g, '_')]] + "' name='" + needed_parameters[j].replace(/\s/g, '_') + "'id='input_" + needed_parameters[j].replace(/\s/g, '_') + "_" + variable + "' onfocusin='record_table()' oninput='Parameter_Memory(this,\"" + variable + "\")' onchange='ValidateInput(this, \"" + rfunctions.parameter_info[metadata_list.indexOf(needed_parameters[j].replace(/\s/g, '_'))].entry_type + "\", \"" + variable + "\")'><br>";
+        parameter_field += "<input type='text' value='" + inputted_metadata[variable][column_index[needed_parameters[j].replace(/\s/g, '_')]] + "' name='" + needed_parameters[j].replace(/\s/g, '_') + "'id='input_" + needed_parameters[j].replace(/\s/g, '_') + "_" + variable + "' onfocusin='record_table()' oninput='Parameter_Memory(this,\"" + variable + "\")' onchange='ValidateInput(this, \"" + rfunctions.parameter_info[metadata_list.indexOf(needed_parameters[j].replace(/\s/g, '_'))].entry_type + "\", \"" + variable + "\")'></td></tr>";
       }
       else if (rfunctions.parameter_info[metadata_list.indexOf(needed_parameters[j].replace(/\s/g, '_'))].input_type == "multiple_choice_with_other_variables") {
         parameter_field += 
@@ -910,11 +932,11 @@ function parameter_fields (variable, type_chosen) {
         };
 
         parameter_field += 
-          "</select><br>";
+          "</select></td></tr>";
       }
     };
     // prints this all out, display seems smooth
-    document.getElementById('necessary_parameters_' + variable).innerHTML = parameter_field; 
+    document.getElementById('necessary_parameters_' + variable).innerHTML = parameter_field + '</table>'; 
 };
 
 
@@ -1277,15 +1299,16 @@ function areAllHeld2 (variable) {
 }
 
 display_epsilon_bool = false;
+reserved_epsilon_bool = false;
 
-function toggle_epsilon_display (text) {
+function toggle_epsilon_display () {
   display_epsilon_bool = !display_epsilon_bool;
   generate_epsilon_table();
-  if (display_epsilon_bool) {
-    document.getElementById(text.id).value="Hide Epsilon";  
-  }
 }
-
+function toggle_reserved_epsilon_tool () {
+  reserved_epsilon_bool = !reserved_epsilon_bool;
+  generate_epsilon_table();
+}
 // Creates Epsilon 
 function generate_epsilon_table () {
     var epsilon_table = 
@@ -1305,10 +1328,10 @@ function generate_epsilon_table () {
             "</td>";
       }
     epsilon_table +=
-            "<td title='How accurate?' style='font-weight: bold;'>" +
+            "<td title='Accuracy measures differ across statistics. Click the red question mark next to any accuracy value to learn more' style='font-weight: bold;'>" +
                 "Accuracy" +
             "</td>" +
-            "<td title='Wanna fix the epsilon/accuracy value?' style='font-weight: bold;'>" +
+            "<td title='The portion of the privacy budget will stay fixed for all statistics being Held' style='font-weight: bold;'>" +
                 "Hold" +
             "</td>" +
         "</tr>";
@@ -1369,13 +1392,139 @@ function generate_epsilon_table () {
     epsilon_table += 
     "</table>";
 
-    epsilon_table += "<br><div style='text-align:center'><input onclick='toggle_epsilon_display(this)' type='button' value='Show Epsilon' id='epsilon_toggle_button' style='width:125px'></input>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Alpha (&alpha;): <input name='beta' id='global_beta_edit' onfocusout='global_parameters_beta(this)' title='Probability that the error for a given statistic exceeds the estimate reported in the Accuracy column.' value='" + global_beta + "' style='color: black;' size='4' type='text' placeholder='Beta'></div>"
+    var epsilon_toggle_button_text = display_epsilon_bool ? 'Hide Epsilon' : 'Show Epsilon';
+    var reserved_epsilon_toggle_button_text = reserved_epsilon_bool ? "Don&#146;t Reserve Epsilon" : "Reserve Epsilon";
 
-    document.getElementById('epsilon_sidebar').innerHTML = epsilon_table;
+    epsilon_table += "<br><div style='text-align:center'><input onclick='toggle_epsilon_display()' type='button' value='" + epsilon_toggle_button_text + "' id='epsilon_toggle_button' style='width:125px'> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Confidence Level (&alpha;) <input name='beta' id='global_beta_edit' onfocusout='global_parameters_beta(this)' title='Confidence level for accuracy estimates' value='" + global_beta + "' style='color: black;' size='4' type='text' placeholder='Beta'><button type='button' class='manualinfo' data-load-url='psiIntroduction.html' data-toggle='modal' data-target='#myModal' data-id='accuracy'><span class='glyphicon glyphicon-question-sign' style='color:#ADD8E6;font-size:12px;'></span></button>";
+
+    // <br><br><input onclick='toggle_reserved_epsilon_tool();' value='" + reserved_epsilon_toggle_button_text + "' id='reserved_epsilon_toggle_button' type='button'></div>"
+
+    // if (reserved_epsilon_bool) {
+    //   epsilon_table += '' +
+    //     '<table id="reserved_epsilon_table">' +
+    //         '<tr id="reserved_epsilon_row">' +
+    //           '<td id="reserved_epsilon_slide">' +
+    //             '<input id="reserved_epsilon_slider" data-slider-id="reserved_epsilon_slider" data-slider-min="0" data-slider-max="100" data-slider-step="1" data-slider-value="0" />' +
+    //           '</td>' +
+    //           '<td id="reserved_epsilon_type">' +
+    //             '<input id="reserved_epsilon_input" type="number" onchange="reserved_epsilon_input_change(this)" value="0" style="width:45px;">' +
+    //           '</td>' +
+    //         '</tr>' +
+    //     '</table>';
+    // }
+
+    document.getElementById('epsilon_sidebar_top').innerHTML = epsilon_table;
 };
 
+
+// https://github.com/seiyria/bootstrap-slider
+  
+var slider = new Slider("#re_slider", {
+  formatter: function(value) {
+    return 'Reserved: ' + value + "%";
+  },
+});
+
+slider.on("slide", function(sliderValue) {
+  document.getElementById("re_value").textContent = sliderValue;
+});
+
+ slider.on("slideStop", function(sliderValue) {
+  // If reserving entire budget, warn user and give them an option to take it back
+  if(sliderValue == 100){
+  	if(confirm("This will give your entire privacy budget to future users. Your session will end and the only statistics released about your data will be those requested by other researchers. Are you sure you would like to continue?")){
+  		//Session ends
+  		location.reload();
+  	}
+  	else{
+  		//  setTimeout(function(){
+       //$('#re_slider').slider('refresh');
+    //  $(function() {
+//     $('#re_slider').slider();
+//     $('#re_slider').slider('setValue', 8);
+// });  
+//        //$("#re_slider").val(sliderValue);
+     //  $('#re_slider').slider('refresh');
+     //   $('#re_slider').slider('setValue', 8);
+      
+    //},500); // 200 = 0.2 seconds = 200 miliseconds
+
+
+  		sliderValue = global_sliderValue;
+  		document.getElementById("re_value").textContent = sliderValue;
+  		//slider.slider('setValue', 8, true);
+  		//$('#re_slider').slider('setValue', 8, true);
+  		//console.log(slider);
+  		//$("#re_slider").slider();
+  		//$("#re_slider").val(sliderValue);
+  		//$("#re_slider").slider('setValue', sliderValue);
+  	}
+  }
+  if(sliderValue == 0){
+  	reserved_epsilon_toggle = false;
+  }
+  else{
+  	reserved_epsilon_toggle = true;
+  }
+  document.getElementById("re_value").textContent = sliderValue;
+  global_sliderValue = sliderValue;
+  reserved_epsilon = global_epsilon*(sliderValue/100);
+  reserved_delta = global_delta*(sliderValue/100);
+  calculate_fe();
+  calculate_fd();
+  display_params();
+  talktoR();
+ });
+
+// JM function for displaying the privacy parameters 
+function display_params () {
+  var delta_split = parseFloat(global_delta);
+  if (delta_split.toString().length > 10) {
+    delta_split = delta_split.toFixed(10);
+  }
+  delta_split = parseFloat(delta_split).toExponential();
+  delta_split = delta_split.split('e');
+
+  var delta_split2 = parseFloat(global_fd);
+  if (delta_split2.toString().length > 10) {
+    delta_split2 = delta_split2.toFixed(10);
+  }
+  delta_split2 = parseFloat(delta_split2).toExponential();
+  delta_split2 = delta_split2.split('e');
+  //JM displaying function parameters even if sec of samp is off but reserved epsilon is on
+  if (SS_value_past == '') {
+  	if(reserved_epsilon_toggle){
+  		var html = '<table align="center"><tr><td style="text-align:right; padding-right: 15px;">Epsilon (&epsilon;):</td><td style="text-align:left;">' + parseFloat(global_epsilon).toFixed(4) + '</td><td style="text-align:left; padding-left:15px;">( ' + parseFloat(global_fe).toFixed(4) + '</td><td style="text-align:left; padding-left:5px;"> Functioning Epsilon )</td></tr><tr><td style="text-align:right; padding-right: 15px; padding-left: 60px;">Delta (&delta;):</td><td style="text-align:left;">' + delta_split[0] + '&times;10<sup>' + delta_split[1] + '</sup></td><td style="text-align:left; padding-left:15px;">( ' + delta_split2[0] + '&times;10<sup>' + delta_split2[1] + '</sup></td><td style="text-align:left; padding-left:5px;"> Functioning Delta )</td></tr></table>';
+   		document.getElementById('display_parameters').innerHTML = html;
+  	}
+  	else{
+  		var html = '<table align="center"><tr><td style="text-align:right; padding-right: 15px;">Epsilon (&epsilon;):</td><td style="text-align:left;">' + parseFloat(global_epsilon).toFixed(4) + '</td></tr><tr><td style="text-align:right; padding-right: 15px;">Delta (&delta;):</td><td style="text-align:left;">' + delta_split[0] + '&times;10<sup>' + delta_split[1] + '</sup></td></tr><tr><td style="text-align:right; padding-right: 15px;"> </td><td style="text-align:left; padding-left: 15px;"> </td></tr></table>';
+   	    document.getElementById('display_parameters').innerHTML = html;
+  	}   
+  }  
+  else {
+    var html = '<table align="center"><tr><td style="text-align:right; padding-right: 15px;">Epsilon (&epsilon;):</td><td style="text-align:left;">' + parseFloat(global_epsilon).toFixed(4) + '</td><td style="text-align:left; padding-left:15px;">( ' + parseFloat(global_fe).toFixed(4) + '</td><td style="text-align:left; padding-left:5px;"> Functioning Epsilon )</td></tr><tr><td style="text-align:right; padding-right: 15px; padding-left: 60px;">Delta (&delta;):</td><td style="text-align:left;">' + delta_split[0] + '&times;10<sup>' + delta_split[1] + '</sup></td><td style="text-align:left; padding-left:15px;">( ' + delta_split2[0] + '&times;10<sup>' + delta_split2[1] + '</sup></td><td style="text-align:left; padding-left:5px;"> Functioning Delta )</td></tr><tr><td style="text-align:center" colspan="4">Secrecy of the Sample: <span style="text-align:left; padding-left:15px;">' + SS_value_past + '</span></td></tr></table>';
+    document.getElementById('display_parameters').innerHTML = html;
+  }
+}
+
 function explain_accuracy (variable, statistic, accuracy, variable_type) {
-  alert("You are releasing the " + statistic + " for the variable: " + variable +", which is a " + variable_type + ". The accuracy at which this is released is: " + accuracy + ", which means (INSERT SIMPLE EXPLANATION).");
+	//Might want to put these in the JSON file so we don't have to write a separate one for each statistic (JM) 
+	var prob = 1-global_beta;
+	var unnormed_acc = (accuracy*global_size).toFixed(3);
+	var acc_explanation = "";
+	var acc_prefix = "Releasing " + statistic + " for the variable " + variable +". With probability " + prob;
+	if(statistic == "Mean"){
+		acc_explanation =  acc_prefix + " the output Mean will differ from the true mean by at most "+unnormed_acc+" ("+accuracy+"%).";
+	}
+	if(statistic == "Histogram"){
+		acc_explanation =  acc_prefix + " every output count will differ from their true count by at most "+unnormed_acc+" ("+accuracy+"%).";
+	}
+	if(statistic == "Quantile"){
+		acc_explanation =  acc_prefix + " for every t the output count of the number of datapoints less than t will differ from the true count by at most "+unnormed_acc+" ("+accuracy+"%).";
+	}
+	alert(acc_explanation);
+ // alert("Releasing the " + statistic + " for the variable: " + variable +", which is a " + variable_type + ". The accuracy at which this is released is: " + accuracy + ", which means (INSERT SIMPLE EXPLANATION).");
 }
 
 // call talktoR when epsilon table is updated
@@ -1482,12 +1631,15 @@ var window_global_delta = global_delta;
 var window_global_fe = global_fe;
 var window_global_fd = global_fd;
 var window_SS_value_past = SS_value_past;
+var window_reserved_epsilon = reserved_epsilon;
 
 var window_global_delta_base = (parseFloat(window_global_delta).toExponential()).split('e')[0];
 var window_global_delta_power = (parseFloat(window_global_delta).toExponential()).split('e')[1].substr(1);
 
 var base_toFixed_amt = 0;
 var scientific_notion_for_delta_toggle = false;
+var window_reserved_epsilon_toggle = false;
+var submitted_reserved_epsilon_toggle = false;
 
 function global_parameters_beta (beta) {
     if (Validation("pos_number", beta.value) == "false") {
@@ -1630,7 +1782,7 @@ function delta_check (delta) {
             window_global_delta = delta.value;
             window_global_delta_base = (parseFloat(window_global_delta).toExponential()).split('e')[0];
             window_global_delta_power = (parseFloat(window_global_delta).toExponential()).split('e')[1].substr(1);
-
+			global_delta = delta.value;
             
             if (window_SS_value_past != "") {
               calculate_fd();
@@ -1640,12 +1792,13 @@ function delta_check (delta) {
 }
 
 function delta_check_exp (delta, part) {
-  var format_bool = (Validation("pos_number", delta.value) == "false");
+  
   if (part == 'base') {
+    var format_bool = (Validation("pos_number", delta.value) == "false");  
     if (format_bool || delta.value < 1 || delta.value >= 10) {
         delta.value = window_global_delta_base;
         if (!format_bool) {
-          alert("The input should be between 1 and 10.");
+          alert("This input should be between 1 and 10.");
         }
         return false;
     }
@@ -1654,9 +1807,10 @@ function delta_check_exp (delta, part) {
             window_global_delta_base = delta.value;
             window_global_delta = window_global_delta_base * Math.pow(10, -1 * window_global_delta_power);
 
-            if (window_SS_value_past != "") {
+            //if (window_SS_value_past != "") { //JM
               calculate_fd();
-            }
+              talktoR(); //JM
+            //}
         }
     }
   }
@@ -1670,9 +1824,10 @@ function delta_check_exp (delta, part) {
             window_global_delta_power = delta.value;
             window_global_delta = window_global_delta_base * Math.pow(10, -1 * window_global_delta_power);
             
-            if (window_SS_value_past != "") {
+          //  if (window_SS_value_past != "") { //JM
               calculate_fd();
-            }
+              talktoR(); //JM
+            //}
         }
     }
   };
@@ -1686,36 +1841,110 @@ function epsilon_check (epsilon) {
     else {
         if (window_global_epsilon != epsilon.value) {
             window_global_epsilon = epsilon.value;
-
-           
-            if (window_SS_value_past != "") {
+			
+			global_epsilon = epsilon.value;   //JM
+           // if (window_SS_value_past != "") {
               calculate_fe();
-            }
+              talktoR(); //JM
+            //}
         }
     }
 }
 
+function reserved_epsilon_check (reserved_epsilon) {
+  if (Validation("pos_number", reserved_epsilon.value) == "false") {
+        reserved_epsilon.value = window_reserved_epsilon;
+        return false;
+  }
+  else {
+    if (window_reserved_epsilon != reserved_epsilon.value) {
+        window_reserved_epsilon = reserved_epsilon.value;
+
+           
+        //if (window_SS_value_past != "") {
+          calculate_fe();
+          talktoR();
+        //}
+      }
+    }
+}
+
+// function calculate_fe () {
+// 	//var fe = 0;
+//     var fe = Math.log(1+(Math.exp(window_global_epsilon)-1)*(window_SS_value_past / global_size));
+//     
+//     window_global_fe = fe;
+//     $('#FE').show();
+//     document.getElementById('FE_value').innerHTML = fe.toFixed(4);
+//     // alert(fe);
+// } 
+// 
+// function calculate_fd () {
+//     var fd = (window_SS_value_past / global_size) * window_global_delta;
+//     window_global_fd = fd;
+//     $('#FD').show();
+//     if (scientific_notion_for_delta_toggle) {
+//       document.getElementById('FD_value').innerHTML = convert_to_scientific_notion(window_global_fd.toFixed(10));
+//     }
+//     else {
+//       document.getElementById('FD_value').innerHTML = fd.toFixed(10);
+//     }
+//     // alert(fd);
+// }
+//JM rewrite function parameter functions:
 function calculate_fe () {
-    var fe = Math.log(1+(Math.exp(window_global_epsilon)-1)*(window_SS_value_past / global_size));
+	var fe = global_epsilon;
+	var display = false;
+	if (window_SS_value_past != "") {
+    	fe = Math.log(1+(Math.exp(window_global_epsilon)-1)*(window_SS_value_past / global_size));
+    	display = true;
+    }
+    if(reserved_epsilon_toggle){
+    	fe = fe*(1-(global_sliderValue/100));
+    	display = true;
+    }
+    global_fe = fe;
     window_global_fe = fe;
-    $('#FE').show();
-    document.getElementById('FE_value').innerHTML = fe.toFixed(4);
+    //console.log(document.getElementById('FE_value'));
+    //document.getElementById('FE_value').innerHTML = fe.toFixed(4);
+    
+    if(display){
+  	  $('#FE').show();
+    }
+    else{
+      $('#FE').hide();
+    }
     // alert(fe);
 } 
 
 function calculate_fd () {
-    var fd = (window_SS_value_past / global_size) * window_global_delta;
+	var fd = global_delta;
+	var display = false;
+	if (window_SS_value_past != "") {
+    	 fd = (window_SS_value_past / global_size) * window_global_delta;
+    	 display = true;
+    }
+     if(reserved_epsilon_toggle){
+    	fd = fd*(1-(global_sliderValue/100));
+    	display = true;
+    }
+    global_fd = fd;
     window_global_fd = fd;
-    $('#FD').show();
-    if (scientific_notion_for_delta_toggle) {
-      document.getElementById('FD_value').innerHTML = convert_to_scientific_notion(window_global_fd.toFixed(10));
-    }
-    else {
-      document.getElementById('FD_value').innerHTML = fd.toFixed(10);
-    }
+    if(display){
+     $('#FD').show();
+   	 if (scientific_notion_for_delta_toggle) {
+  //  	  document.getElementById('FD_value').innerHTML = convert_to_scientific_notion(window_global_fd.toFixed(10));
+   	 }
+   	 else {
+  // 	   document.getElementById('FD_value').innerHTML = fd.toFixed(10);
+   	 }
+   	}
+   	else{
+   	 $('#FD').hide();
+   	}
     // alert(fd);
 }
-
+///////////////////// 
 function global_parameters_SS (SS) {
     // console.log(SS.value);
     // console.log(window_global_size);
@@ -1726,7 +1955,7 @@ function global_parameters_SS (SS) {
         window_SS_value_past = SS.value;
         calculate_fe();
         calculate_fd();
-
+		talktoR();//JM added
         // for (i = 0; i < varlist_active.length; i++) {
         //   for (j = 0; j < statistic_list.length; j++) {
         //     if (inputted_metadata[varlist_active[i]][4 * j + 1] == 2) {
@@ -1747,11 +1976,20 @@ function global_parameters_SS (SS) {
 function clear_SS () {
     var SS_value_before_clear = window_SS_value_past;
     window_SS_value_past = "";
-    window_global_fe = "";
-    window_global_fd = "";
     document.getElementById('SS').value = "";
-    $('#FE').hide();
-    $('#FD').hide();
+    calculate_fe();
+    calculate_fd();
+    display_params();
+    talktoR();
+    //JM blocked below for new reserve epsilon functionality
+// 	window_global_fe = "";
+// 	window_global_fd = "";
+// 	document.getElementById('SS').value = "";
+// 	$('#FE').hide();
+// 	$('#FD').hide();
+
+    
+
 
     // if (SS_value_before_clear != "") {
     //   for (i = 0; i < varlist_active.length; i++) {
@@ -1780,21 +2018,29 @@ function edit_parameters_window () {
     window_global_delta_base = (parseFloat(window_global_delta).toExponential()).split('e')[0];
     window_global_delta_power = (parseFloat(window_global_delta).toExponential()).split('e')[1].substr(1);
 
-    var html = '<table id="parameter_editing_table" align="center"><tr><td style="text-align:right; padding-right: 15px;"><span title="Epsilon from definition of differential privacy. Smaller values correspond to more privacy.">Epsilon (&epsilon;):</span></td><td style="padding-left: 15px;"><input id="epsilon_value" name="epsilon" onfocusout="epsilon_check(this)" title="Epsilon from definition of differential privacy. Smaller values correspond to more privacy." value="' + global_epsilon + '" style="color: black;" type="text" placeholder="Epsilon"></td></tr><tr><td style="text-align:right; padding-right: 15px;"><span title = "Delta from definition of differential privacy. Smaller values correspond to more privacy.">Delta (&delta;):</span></td><td style="padding-left: 15px;" id="delta_row"><input id="delta_value" name="delta" onfocusout="delta_check(this)" title = "Delta from definition of differential privacy. Smaller values correspond to more privacy." value="' + global_delta + '" style="color: black;" type="text" placeholder="Delta"> <input title="Use exponential notation to enter in delta as delta is normally very small and using exponential notation to convey it is more convenient." type="button" style="color:gray; width:200px;" onclick="change_to_exponential_form(\'D\')" value="Use Exponential Notation"></td></tr>';
+    var html = '<table id="parameter_editing_table" align="center"><tr><td style="text-align:right; padding-right: 15px;"><span title="Epsilon from definition of differential privacy. Smaller values correspond to more privacy.">Epsilon (&epsilon;):</span></td><td style="padding-left: 15px;"><input id="epsilon_value" name="epsilon" onfocusout="epsilon_check(this)" title="Epsilon from definition of differential privacy. Smaller values correspond to more privacy." value="' + global_epsilon + '" style="color: black;" type="text" placeholder="Epsilon"> <!-- JM restricting reserve epsilon to slider <input title="Reserving epsilon will decrease your privacy budget, but will enable future researchers to make queries on your dataset." type="button" style="color:gray; width:200px;" onclick="add_reserved_epsilon_field()" value="Reserve Epsilon"></td></tr>-->';
+
+    html += '<tr id="reserved_epsilon_row" style="display:none;"><td style="text-align:right; padding-right: 15px;"><span title="Epsilon from definition of differential privacy. Smaller values correspond to more privacy.">Reserved Epsilon:</span></td><td style="padding-left: 15px;"><input id="reserved_epsilon_value" name="reserved_epsilon" onfocusout="reserved_epsilon_check(this)" title="Reserving epsilon will decrease your privacy budget, but will enable future researchers to make queries on your dataset." value="' + reserved_epsilon + '" style="color: black;" type="text" placeholder="Reserved Epsilon"> <input title="" type="button" style="color:gray; width:200px;" onclick="remove_reserved_epsilon_field()" value="Remove Reserve Epsilon"></td></tr>';
+
+    html += '<tr><td style="text-align:right; padding-right: 15px;"><span title = "Delta from definition of differential privacy. Smaller values correspond to more privacy.">Delta (&delta;):</span></td><td style="padding-left: 15px;" id="delta_row"><input id="delta_value" name="delta" onfocusout="delta_check(this)" title = "Delta from definition of differential privacy. Smaller values correspond to more privacy." value="' + global_delta + '" style="color: black;" type="text" placeholder="Delta"> <input title="Use exponential notation to enter in delta as delta is normally very small and using exponential notation to convey it is more convenient." type="button" style="color:gray; width:200px;" onclick="change_to_exponential_form(\'D\')" value="Use Exponential Notation"></td></tr>';
     
     if (SS_value_past == '') {
-      html += '<tr><td style="text-align:right; padding-right: 15px;"><span title="Is the data a random and secret sample from a larger population of known size? Here, secret means that the choice of the people in the sample has not been revealed. If this is the case, you can improve the accuracy of your statistics without changing the privacy guarantee. Estimate the size of the larger population. It is important to be conservative in your estimate. In other words, it is okay underestimate but could violate privacy if you overestimate.">Secrecy of the Sample:</span></td><td style="padding-left: 15px;"><input id="SS" name="SS" onfocusout="global_parameters_SS(this)" title="Is the data a random and secret sample from a larger population of known size? Here, secret means that the choice of the people in the sample has not been revealed. If this is the case, you can improve the accuracy of your statistics without changing the privacy guarantee. Estimate the size of the larger population. It is important to be conservative in your estimate. In other words, it is okay underestimate but could violate privacy if you overestimate." value="" style="color: black;" type="text" placeholder=""> <input title="Remove any entered value for the secrecy of the sample, and revert privacy parameters to the values without adjustment." type="button" style="color:gray;" onclick="clear_SS()" value="Clear"></td></tr><tr id="FE" style="display:none;"><td style="text-align:right; padding-right: 15px; padding-top:15px;"><span title="When using secrecy of the sample, you get a boost in epsilon, which is represented here. This value can only be edited by changing the epsilon or secrecy of the sample fields.">Functioning Epsilon:</span></td><td style="padding-left: 15px; padding-top:15px;"><div id="FE_value" name="FE" title="When using secrecy of the sample, you get a boost in epsilon, which is represented here. This value can only be edited by changing the epsilon or secrecy of the sample fields." style="color: black;"></div></td></tr><tr id="FD" style="display:none;"><td style="text-align:right; padding-right: 15px;"><span title="When using secrecy of the sample, you get a boost in delta, which is represented here. This value can only be edited by changing the delta or secrecy of the sample fields.">Functioning Delta:</span></td><td style="padding-left: 15px;"><div id="FD_value" name="FD" title="When using secrecy of the sample, you get a boost in delta, which is represented here. This value can only be edited by changing the delta or secrecy of the sample fields." style="color: black;" ></div></td></tr></table>';
+      html += '<tr><td style="text-align:right; padding-right: 15px;"><span title="Is the data a random and secret sample from a larger population of known size? Here, secret means that the choice of the people in the sample has not been revealed. If this is the case, you can improve the accuracy of your statistics without changing the privacy guarantee. Estimate the size of the larger population. It is important to be conservative in your estimate. In other words, it is okay underestimate but could violate privacy if you overestimate.">Secrecy of the Sample:</span></td><td style="padding-left: 15px;"><input id="SS" name="SS" onfocusout="global_parameters_SS(this)" title="Is the data a random and secret sample from a larger population of known size? Here, secret means that the choice of the people in the sample has not been revealed. If this is the case, you can improve the accuracy of your statistics without changing the privacy guarantee. Estimate the size of the larger population. It is important to be conservative in your estimate. In other words, it is okay underestimate but could violate privacy if you overestimate." value="" style="color: black;" type="text" placeholder=""> <input title="Remove any entered value for the secrecy of the sample, and revert privacy parameters to the values without adjustment." type="button" style="color:gray; width:200px;" onclick="clear_SS()" value="Clear"></td></tr><tr id="FE" style="display:none;"><td style="text-align:right; padding-right: 15px; padding-top:15px;"><span title="When using secrecy of the sample, you get a boost in epsilon, which is represented here. This value can only be edited by changing the epsilon or secrecy of the sample fields.">Functioning Epsilon:</span></td><td style="padding-left: 15px; padding-top:15px;"><div id="FE_value" name="FE" title="When using secrecy of the sample, you get a boost in epsilon, which is represented here. This value can only be edited by changing the epsilon or secrecy of the sample fields." style="color: black;"></div></td></tr><tr id="FD" style="display:none;"><td style="text-align:right; padding-right: 15px;"><span title="When using secrecy of the sample, you get a boost in delta, which is represented here. This value can only be edited by changing the delta or secrecy of the sample fields.">Functioning Delta:</span></td><td style="padding-left: 15px;"><div id="FD_value" name="FD" title="When using secrecy of the sample, you get a boost in delta, which is represented here. This value can only be edited by changing the delta or secrecy of the sample fields." style="color: black;" ></div></td></tr></table>';
     }
     else {
-      html += '<tr><td style="text-align:right; padding-right: 15px;"><span title="Is the data a random and secret sample from a larger population of known size? Here, secret means that the choice of the people in the sample has not been revealed. If this is the case, you can improve the accuracy of your statistics without changing the privacy guarantee. Estimate the size of the larger population. It is important to be conservative in your estimate. In other words, it is okay underestimate but could violate privacy if you overestimate.">Secrecy of the Sample:</span></td><td style="padding-left: 15px;"><input id="SS" name="SS" onfocusout="global_parameters_SS(this)" title="Is the data a random and secret sample from a larger population of known size? Here, secret means that the choice of the people in the sample has not been revealed. If this is the case, you can improve the accuracy of your statistics without changing the privacy guarantee. Estimate the size of the larger population. It is important to be conservative in your estimate. In other words, it is okay underestimate but could violate privacy if you overestimate." value="' + SS_value_past + '" style="color: black;" type="text" placeholder=""> <input title="Remove any entered value for the secrecy of the sample, and revert privacy parameters to the values without adjustment." type="button" style="color:gray;" onclick="clear_SS()" value="Clear"></td></tr><tr id="FE" style=""><td style="text-align:right; padding-right: 15px; padding-top:15px;"><span title="When using secrecy of the sample, you get a boost in epsilon, which is represented here. This value can only be edited by changing the epsilon or secrecy of the sample fields.">Functioning Epsilon:</span></td><td style="padding-left: 15px; padding-top:15px;"><div id="FE_value" name="FE" title="When using secrecy of the sample, you get a boost in epsilon, which is represented here. This value can only be edited by changing the epsilon or secrecy of the sample fields." style="color: black;">' + global_fe.toFixed(4) + '</div></td></tr><tr id="FD" style=""><td style="text-align:right; padding-right: 15px;"><span title="When using secrecy of the sample, you get a boost in delta, which is represented here. This value can only be edited by changing the delta or secrecy of the sample fields.">Functioning Delta:</span></td><td style="padding-left: 15px;"><div id="FD_value" name="FD" title="When using secrecy of the sample, you get a boost in delta, which is represented here. This value can only be edited by changing the delta or secrecy of the sample fields." style="color: black;" >' + global_fd.toFixed(10) + '</div></td></tr></table>';
+      html += '<tr><td style="text-align:right; padding-right: 15px;"><span title="Is the data a random and secret sample from a larger population of known size? Here, secret means that the choice of the people in the sample has not been revealed. If this is the case, you can improve the accuracy of your statistics without changing the privacy guarantee. Estimate the size of the larger population. It is important to be conservative in your estimate. In other words, it is okay underestimate but could violate privacy if you overestimate.">Secrecy of the Sample:</span></td><td style="padding-left: 15px;"><input id="SS" name="SS" onfocusout="global_parameters_SS(this)" title="Is the data a random and secret sample from a larger population of known size? Here, secret means that the choice of the people in the sample has not been revealed. If this is the case, you can improve the accuracy of your statistics without changing the privacy guarantee. Estimate the size of the larger population. It is important to be conservative in your estimate. In other words, it is okay underestimate but could violate privacy if you overestimate." value="' + SS_value_past + '" style="color: black;" type="text" placeholder=""> <input title="Remove any entered value for the secrecy of the sample, and revert privacy parameters to the values without adjustment." type="button" style="color:gray; width:200px;" onclick="clear_SS()" value="Clear"></td></tr><tr id="FE" style=""><td style="text-align:right; padding-right: 15px; padding-top:15px;"><span title="When using secrecy of the sample, you get a boost in epsilon, which is represented here. This value can only be edited by changing the epsilon or secrecy of the sample fields.">Functioning Epsilon:</span></td><td style="padding-left: 15px; padding-top:15px;"><div id="FE_value" name="FE" title="When using secrecy of the sample, you get a boost in epsilon, which is represented here. This value can only be edited by changing the epsilon or secrecy of the sample fields." style="color: black;">' + global_fe.toFixed(4) + '</div></td></tr><tr id="FD" style=""><td style="text-align:right; padding-right: 15px;"><span title="When using secrecy of the sample, you get a boost in delta, which is represented here. This value can only be edited by changing the delta or secrecy of the sample fields.">Functioning Delta:</span></td><td style="padding-left: 15px;"><div id="FD_value" name="FD" title="When using secrecy of the sample, you get a boost in delta, which is represented here. This value can only be edited by changing the delta or secrecy of the sample fields." style="color: black;" >' + global_fd.toFixed(10) + '</div></td></tr></table>';
     }
     
-    html += '<div style="text-align:center; padding-top: 40px;"><button type="button" class="btn btn-default" data-dismiss="modal" onclick="edit_window_closed()">Submit</button><div>';
+    html += '<div style="text-align:center; padding-top: 40px;"><div>';//JM removed second submit button//<button type="button" class="btn btn-default" data-dismiss="modal" onclick="edit_window_closed()">Submit</button><div>';
 
     document.getElementById("modal-body-edit-window").innerHTML = html;
 
     if (scientific_notion_for_delta_toggle) {
       change_to_exponential_form('D');
+    }
+
+    if (submitted_reserved_epsilon_toggle) {
+      add_reserved_epsilon_field();
     }
 
     $('#myModal2').modal('show');
@@ -1814,7 +2060,7 @@ function change_to_exponential_form (key) {
     if (digits < 0 || digits > 20) {
       digits = base_toFixed_amt;
     }
-    var delta_html = '<input id="delta_value_base" name="delta_base" onfocusout="delta_check_exp(this,\'base\')" title = "Delta from definition of differential privacy. Smaller values correspond to more privacy." value="' + parseFloat(window_global_delta_base).toFixed(digits) + '" style="color: black;width:114px" type="text" placeholder="Delta Base">&times;10<sup>-<input id="delta_value_power" name="delta_power" onfocusout="delta_check_exp(this, \'power\')" title = "Delta from definition of differential privacy. Smaller values correspond to more privacy." value="' + window_global_delta_power + '" style="color: black;width:20px;" type="text" placeholder="Delta Power"></sup> <input title="Use exponential notation to enter in delta as delta is normally very small and using exponential notation to convey it is more convenient." type="button" style="color:gray; width:200px;" onclick="change_to_exponential_form(\'E\')" value="Use Decimal Notation">';
+    var delta_html = '<input id="delta_value_base" name="delta_base" onfocusout="delta_check_exp(this,\'base\')" title = "Delta from definition of differential privacy. Smaller values correspond to more privacy." value="' + parseFloat(window_global_delta_base).toFixed(digits) + '" style="color: black;width:107.5px" type="text" placeholder="Delta Base">&times;10<sup>-<input id="delta_value_power" name="delta_power" onfocusout="delta_check_exp(this, \'power\')" title = "Delta from definition of differential privacy. Smaller values correspond to more privacy." value="' + window_global_delta_power + '" style="color: black;width:25px;" type="text" placeholder="Delta Power"></sup> <input title="Use exponential notation to enter in delta as delta is normally very small and using exponential notation to convey it is more convenient." type="button" style="color:gray; width:200px;" onclick="change_to_exponential_form(\'E\')" value="Use Decimal Notation">';
     document.getElementById('delta_row').innerHTML = delta_html;
     scientific_notion_for_delta_toggle = true;
 
@@ -1850,6 +2096,9 @@ function edit_window_closed () {
   global_fe = window_global_fe;
   global_fd = window_global_fd;
   SS_value_past = window_SS_value_past;
+  display_params();
+
+  submitted_reserved_epsilon_toggle = window_reserved_epsilon_toggle;
 
 
   if (document.getElementById('delta_value_base') != null) {
@@ -1890,7 +2139,6 @@ function edit_window_closed () {
   delta_split2 = parseFloat(delta_split2).toExponential();
   delta_split2 = delta_split2.split('e');
 
-  
 
   if (SS_value_past == '') {
     var html = '<table align="center"><tr><td style="text-align:right; padding-right: 15px;">Epsilon (&epsilon;):</td><td style="text-align:left;">' + parseFloat(global_epsilon).toFixed(4) + '</td></tr><tr><td style="text-align:right; padding-right: 15px;">Delta (&delta;):</td><td style="text-align:left;">' + delta_split[0] + '&times;10<sup>' + delta_split[1] + '</sup></td></tr><tr><td style="text-align:right; padding-right: 15px;"> </td><td style="text-align:left; padding-left: 15px;"> </td></tr></table>';
@@ -1904,6 +2152,18 @@ function edit_window_closed () {
 }
 
 
+
+
+
+function add_reserved_epsilon_field () {
+  $('#reserved_epsilon_row').show();
+  window_reserved_epsilon_toggle = true;
+}
+
+function remove_reserved_epsilon_field () {
+  $('#reserved_epsilon_row').hide();  
+  window_reserved_epsilon_toggle = false;
+}
 
 // what happens if power is exceptionally small ???/
 
@@ -1975,7 +2235,16 @@ function overridedataset(newfileid) {
 
 
 
+// reserved epsilon -> slider bar -> percentage as oppose to a number
+// need to display reserved epsilon outside edit window
+// use (1-reserved epsilon) * epsilon to send out to the R-server
 
+// additional feedback:
+// automated helper that can be turned off/tutorial mode (like making a new gmail/gmail user)/use cookies.
+
+
+// toggle for slider reserved epsilon on right hand table button
+// start at zero then -> go there.
 
 
 
