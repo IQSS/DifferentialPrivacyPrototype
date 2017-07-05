@@ -9,7 +9,7 @@ img {
 The following demonstrates a tool that helps data depositors release information describing their datasets while protecting privacy by allowing them to distribute a privacy budget across different possible statistical calculations. This tool is called the <i>budgeter</i>.  Data depositors select which statistics they would like to calculate and are given estimates of how accurately each statistic can be computed. They can also redistribute their privacy budget according to which statistics they think are most valuable in their dataset. 
 </p>
 <p>
-Below is found a brief introduction to differential privacy, the mathematical framework that guarantees privacy, as well as an overview of all the features and requirements of this tool.  This explanatory page can be reviewed at any point by clicking any of the information buttons, marked <span class="glyphicon glyphicon-question-sign" style="color:#A3CEDC;font-size: 12px;"></span>.
+Below is found a brief introduction to differential privacy, the mathematical framework that guarantees privacy, as well as an overview of all the features and requirements of this tool.  This explanatory page can be reviewed at any point by clicking any of the information buttons, marked <span class="glyphicon glyphicon-question-sign" style="color:"+qmark_color+";font-size: "+qmark_size+";"></span>.
 </p>
 <br>
 <br>
@@ -61,9 +61,9 @@ For a given level of privacy protection, there are limits on how much statistica
    <p>
 	<ol>
 		<li>Public information: It is not necessary to use differential privacy for public information.</li>
-		<li>Information the disclosure of which would not cause material harm, but which the University has chosen to keep confidential: (&epsilon;=1, &delta;=10<sup>-5</sup>)</li>
-		<li>Information that could cause risk of material harm to individuals or the University if disclosed: (&epsilon;=.25, &delta;=10<sup>-6</sup>)</li>
-		<li>Information that would likely cause serious harm to individuals or the University if disclosed: (&epsilon;=.05, &delta;=10<sup>-7</sup>)</li>
+		<li>Information the disclosure of which would not cause material harm, but which the University has chosen to keep confidential: (&epsilon;=1, &delta;=10<sup>-5</sup>=0.00001)</li>
+		<li>Information that could cause risk of material harm to individuals or the University if disclosed: (&epsilon;=.25, &delta;=10<sup>-6</sup>=0.000001)</li>
+		<li>Information that would likely cause serious harm to individuals or the University if disclosed: (&epsilon;=.05, &delta;=10<sup>-7</sup>=0.0000001)</li>
 		<li>Information that would cause severe harm to individuals or the University if disclosed: It is not recommended that the PSI tool be used with such severely sensitive data.</li>
 	</ol> 
    </p>
@@ -109,7 +109,13 @@ When using the tool you will select statistics to be released one by one. You wi
 <div id="metadata">
 <h4>Entering Metadata</h4>
 <p>
-The algorithms used to generate these statistics each require certain auxiliary information about the variables, which we refer to as <i>metadata</i>.  Different statistics require different metadata.  The tool will only ask for the metadata needed to complete the set of statistics you have chosen.  Here are the meanings of these metadata values:
+The algorithms used to generate these statistics each require certain auxiliary information about the variables, which we refer to as <i>metadata</i>.  Different statistics require different metadata.  The tool will only ask for the metadata needed to complete the set of statistics you have chosen.  
+</p>
+<p>
+Remember that it is important to fill in the metadata <i>as though you have never seen the data</i>. For example, if there is an age variable in the dataset, a lower bound of 0 and an upper bound of 100 are reasonable guesses for the range of ages in any dataset.  If on the other hand, it is public information that the dataset is a survey of US voters, then putting an age lower bound of 18 would be appropriate. Using specific information from the dataset to fill in metadata can lead to a privacy violation. In the above example, this means that you should not look at the dataset to find the oldest or youngest person and record his or her age in the metadata, but rather provide a general, reasonable range.  If this task feels too unnatural, we recommend asking a research assistant to fill in the metadata. This should be somebody who has never seen the raw data but is familiar with how it was collected and the names of the variables. 
+</p>
+<p>
+Here are the meanings of the metadata values:
 </p>
 <p>
 <b>Upper Bound:</b> The largest possible value that this variable can take on. Any observations in the raw data beyond this value will be replaced with this bound (sometimes this is referred to as <i>top-coding</i> or <i>censoring</i>).  For example, if the upper bound on age is entered as 100, and a person in the data had a recorded age of 105, this observation would be overridden to the value of 100 for the calculation of any statistics.
@@ -126,9 +132,6 @@ The algorithms used to generate these statistics each require certain auxiliary 
 <p>
 <b>Bin names:</b> Comma-separated list of all possible categories the variable can take on. For example: red, white, blue. You can also use the shorthand 2:5 to represent 2, 3, 4, 5 or C:G to represent C, D, E, F, G for example. 
 </p>
-<p>
-Remember that it is important to fill in the metadata <i>as though you have never seen the data</i>. For example, if there is an age variable in the dataset, a lower bound of 0 and an upper bound of 100 are reasonable guesses for the range of ages in any dataset.  If on the other hand, it is public information that the dataset is a survey of US voters, then putting an age lower bound of 18 would be appropriate. Using specific information from the dataset to fill in metadata can lead to a privacy violation. In the above example, this means that you should not look at the dataset to find the oldest or youngest person and record his or her age in the metadata, but rather provide a general, reasonable range.  If this task feels too unnatural, we recommend asking a research assistant to fill in the metadata. This should be somebody who has never seen the raw data but is familiar with how it was collected and the names of the variables. 
-</p>
 </div>
 
 <div id="accuracy">
@@ -137,13 +140,13 @@ Remember that it is important to fill in the metadata <i>as though you have neve
 Every statistic that you add has an associated error value. This is a theoretical bound on the worst-case error for the current parameters set for the statistic. There is a alpha (&alpha;) parameter that represents the probability that the error in the final computed statistics exceeds the error bound listed in the table. Alpha is set at a default of .05 and can be changed. The interpretation of these accuracies differs across statistics. If "error" is the number reported in the error column of the table and n is the number of people in the dataset, then the errors should be interpreted in the following ways for each statistic: 
 </p>
 <p>
-<b>Mean:</b>   With probability 1-&alpha;,   true mean - error*n &le; output mean  &le; true mean + error*n
+<b>Mean:</b>   With probability 1-&alpha;:  <center> true mean - error &le; output mean  &le; true mean + error </center>
 </p>
 <p>
-<b>Quantiles:</b> With probability 1-&alpha; for every <i>t</i>, the algorithm's output count of the number of data points less than <i>t</i> satisfies the following:    true count - error*n &le; output count &le; true count + error*n
+<b>Quantiles:</b> For each <i>t</i>, the algorithm's output count of the number of data points less than <i>t</i> satisfies the following with probability 1-&alpha;:  <center>  true count - error &le; output count &le; true count + error </center>
 </p>
 <p>
-<b>Histogram:</b>  With probability 1-&alpha; for each bar in the outputted bar graph,  true count-error*n &le; output count on that bar &le; true count + error*n
+<b>Histogram:</b>  For each bar in the outputted bar graph we have the following with probability 1-&alpha;: <center> true count-error &le; output count on that bar &le; true count + error </center>
 </p>
 <p>
 At any time you may request that certain statistics have more or less error by editing the error column. This will result in a reapportioning of the global epsilon across all of the statistics. There are limits to how accurate the statistics can be. This tool uses an optimal composition theorem for differential privacy to ensure that the statistics are as accurate as possible while maintaining the global privacy guarantee. 

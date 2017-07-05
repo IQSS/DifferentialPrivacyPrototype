@@ -94,6 +94,10 @@ var reserved_epsilon_toggle = false;
 var global_fe = global_epsilon;
 var global_fd = global_delta;
 
+//color and size of information buttons
+var qmark_color = "#090533"; //old value: #FA8072
+var qmark_size = "15px"; // old value: 12px
+
 // List of possible statisitics
 var statistic_list = [];
 for (n = 0; n < rfunctions.rfunctions.length; n++) {
@@ -612,7 +616,7 @@ function create_new_variable (variable) {
     varlist_inactive.splice(variable_index, 1);
     varlist_active.push(variable);
     inputted_metadata[variable.replace(/\s/g, '_')] = array_default();
-    $("#bubble_form").append(make_bubble(variable));
+    $("#bubble_form").prepend(make_bubble(variable));
     console.log(previous_inputted_metadata);
 };
 
@@ -851,14 +855,14 @@ function make_bubble (variable) {
                         "<option id='default_" + variable + "' value='default'>Please select a type</option>" +
                         list_of_types(variable) +
                     "</select>" +
-                    "<button type='button' class='manualinfo' data-load-url='psiIntroduction.html' data-toggle='modal' data-target='#myModal' data-id='statistics' style='float:right;'><span class='glyphicon glyphicon-question-sign' style='color:#ADD8E6;font-size:12px;'></span></button>" +
+                    "<button type='button' class='manualinfo' data-load-url='psiIntroduction.html' data-toggle='modal' data-target='#myModal' data-id='statistics' style='float:right;'><span class='glyphicon glyphicon-question-sign' style='color:"+qmark_color+";font-size:"+qmark_size+";'></span></button>" +
                 "</div>" +
                 "<hr style='margin-top: -0.25em'>" +
                 "<div id='released_statistics_" + variable + "' class='released_statistics'>" +
                 "</div>" +
                 "<hr style='margin-top: -0.25em'>" +
                 "<div id='necessary_parameters_" + variable + "' class='necessary_parameters'></div>" + 
-                "<div><button onclick='delete_variable(\"" + variable_raw + "\")'>DELETE</button></div>" + 
+                "<div><button onclick='delete_variable(\"" + variable_raw + "\")'>Delete</button></div>" + 
             "</div>" +
         "</div>" +
         "<br>" +
@@ -900,15 +904,19 @@ function parameter_fields (variable, type_chosen) {
         else {}
     };
     needed_parameters = needed_parameters.unique();
-
-    // makes blank html text
+    // makes blank html text     
     var parameter_field = "<table>";
+    if(needed_parameters.length > 0){
+    	parameter_field+="<div><p><span style='color:blue;line-height:1.1;display:block; font-size:small'>The selected statistic(s) require the metadata fields below. Fill these in with reasonable estimates that a knowledgeable person could make without having looked at the raw data. <b>Do not use values directly from your raw data as this may leak private information. </b> For example, 0-100 is a reasonable age range, even if the oldest person in your data is only 83. Any entry outside the range will be recoded (a 103 year old would be recoded to 100). Click <button type='button' class='manualinfo' data-load-url='psiIntroduction.html' data-toggle='modal' data-target='#myModal' data-id='statistics'  style='padding-left:0'><u>here for more information.</u></button></span></p></div>";
+    }
+    
+    //    "<button type='button' class='manualinfo' data-load-url='psiIntroduction.html' data-toggle='modal' data-target='#myModal' data-id='accuracy' style='float:right;padding-top:0.5em;'><span class='glyphicon glyphicon-question-sign' style='color:"+qmark_color+";font-size:"+qmark_size+";'></span></button>" +
 
+    
     // uses .unique() to get all unique values and iterate through
     for (j = 0; j < needed_parameters.length; j++) {
       // creates html list in .sort() (alphabet order)
       // parameter_field += "<span title='" + rfunctions.parameter_info[metadata_list.indexOf(needed_parameters[j].replace(/\s/g, '_'))].pinfo + "'>" + needed_parameters[j] + ":</span> <input type='text' value='" + inputted_metadata[variable][column_index[needed_parameters[j].replace(/\s/g, '_')]] + "' name='" + needed_parameters[j].replace(/\s/g, '_') + "'id='input_" + needed_parameters[j].replace(/\s/g, '_') + "_" + variable + "' onfocusin='record_table()' oninput='Parameter_Memory(this,\"" + variable + "\")' onfocusout='ValidateInput(this, \"" + rfunctions.parameter_info[metadata_list.indexOf(needed_parameters[j].replace(/\s/g, '_'))].entry_type + "\", \"" + variable + "\");'><br>";
-      
       parameter_field += "<tr><td style='width:150px;vertical-align:middle;'><span title='" + rfunctions.parameter_info[metadata_list.indexOf(needed_parameters[j].replace(/\s/g, '_'))].pinfo + "'>" + needed_parameters[j] + ":</span></td><td style='vertical-align:middle;'>";
 
       if (rfunctions.parameter_info[metadata_list.indexOf(needed_parameters[j].replace(/\s/g, '_'))].input_type == "text") {
@@ -1313,8 +1321,8 @@ function toggle_reserved_epsilon_tool () {
 // Creates Epsilon 
 function generate_epsilon_table () {
     var epsilon_table = 
-    "<button type='button' class='manualinfo' data-load-url='psiIntroduction.html' data-toggle='modal' data-target='#myModal' data-id='accuracy' style='float:right;padding-top:0.5em;'><span class='glyphicon glyphicon-question-sign' style='color:#ADD8E6;font-size:12px;'></span></button>" +
-    "<table id='epsilon_table' style='width: calc(100% - 24px);'>" +
+    "<button type='button' class='manualinfo' data-load-url='psiIntroduction.html' data-toggle='modal' data-target='#myModal' data-id='accuracy' style='float:right;padding-top:0.5em;'><span class='glyphicon glyphicon-question-sign' style='color:"+qmark_color+";font-size:"+qmark_size+";'></span></button>" +
+    "<table id='epsilon_table' style='width: calc(100% - 30px);'>" +
         "<tr>" +
             "<td style='font-weight: bold;'>" +
                 "Variable Name" +
@@ -1359,7 +1367,7 @@ function generate_epsilon_table () {
                         }
                         epsilon_table +=
                         "<td>" +
-                            "<div style='text-align:center'><input type='text' style='width:50px' value='" + (parseFloat(inputted_metadata[varlist_active[n].replace(/\s/g, '_')][stat_index + 2]).toFixed(4)).toString() + "' name='accuracy_" + statistic_list[m] + "' onclick='record_table()' onchange='ValidateAccuracy(this, \"pos_number\", \"" + varlist_active[n].replace(/\s/g, '_') + "\", \"" + statistic_list[m] + "\")'>" + "<button type='button' class='manualinfo' onclick='explain_accuracy(\"" + varlist_active[n] + "\",\"" + rfunctions.rfunctions[m].statistic + "\",\"" + (parseFloat(inputted_metadata[varlist_active[n].replace(/\s/g, '_')][stat_index + 2]).toFixed(4)).toString() + "\",\"" + inputted_metadata[varlist_active[n].replace(/\s/g, '_')][0] + "\")' style='cursor:help;width:0px;' title='Explains what the error measure means.'><span class='glyphicon glyphicon-question-sign' style='color:#FA8072;font-size:12px;cursor:help;'></button></div>" + 
+                            "<div style='text-align:center'><input type='text' style='width:50px' value='" + (parseFloat(inputted_metadata[varlist_active[n].replace(/\s/g, '_')][stat_index + 2]).toFixed(4)).toString() + "' name='accuracy_" + statistic_list[m] + "' onclick='record_table()' onchange='ValidateAccuracy(this, \"pos_number\", \"" + varlist_active[n].replace(/\s/g, '_') + "\", \"" + statistic_list[m] + "\")'>" + "<button type='button' class='manualinfo' onclick='explain_accuracy(\"" + varlist_active[n] + "\",\"" + rfunctions.rfunctions[m].statistic + "\",\"" + (parseFloat(inputted_metadata[varlist_active[n].replace(/\s/g, '_')][stat_index + 2]).toFixed(4)).toString() + "\",\"" + inputted_metadata[varlist_active[n].replace(/\s/g, '_')][0] + "\")' style='cursor:help;width:0px;' title='Explains what the error measure means.'><span class='glyphicon glyphicon-question-sign' style='color:"+qmark_color+";font-size:"+qmark_size+";cursor:help;'></button></div>" + 
                         "</td>" +
                         "<td>";
                         
@@ -1396,7 +1404,7 @@ function generate_epsilon_table () {
     var epsilon_toggle_button_text = display_epsilon_bool ? 'Hide Epsilon' : 'Show Epsilon';
     var reserved_epsilon_toggle_button_text = reserved_epsilon_bool ? "Don&#146;t Reserve Epsilon" : "Reserve Epsilon";
 
-    epsilon_table += "<br><div style='text-align:center'><input onclick='toggle_epsilon_display()' type='button' value='" + epsilon_toggle_button_text + "' id='epsilon_toggle_button' style='width:125px'> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Confidence Level (&alpha;) <input name='beta' id='global_beta_edit' onfocusout='global_parameters_beta(this)' title='Confidence level for error estimates' value='" + global_beta + "' style='color: black;' size='4' type='text' placeholder='Beta'><button type='button' class='manualinfo' data-load-url='psiIntroduction.html' data-toggle='modal' data-target='#myModal' data-id='accuracy'><span class='glyphicon glyphicon-question-sign' style='color:#ADD8E6;font-size:12px;'></span></button>";
+    epsilon_table += "<br><div style='text-align:center'><input onclick='toggle_epsilon_display()' type='button' value='" + epsilon_toggle_button_text + "' id='epsilon_toggle_button' style='width:125px'> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Confidence Level (&alpha;) <input name='beta' id='global_beta_edit' onfocusout='global_parameters_beta(this)' title='Confidence level for error estimates' value='" + global_beta + "' style='color: black;' size='4' type='text' placeholder='Beta'><button type='button' class='manualinfo' data-load-url='psiIntroduction.html' data-toggle='modal' data-target='#myModal' data-id='accuracy'><span class='glyphicon glyphicon-question-sign' style='color:"+qmark_color+";font-size:"+qmark_size+";'></span></button>";
 
     // <br><br><input onclick='toggle_reserved_epsilon_tool();' value='" + reserved_epsilon_toggle_button_text + "' id='reserved_epsilon_toggle_button' type='button'></div>"
 
@@ -1953,6 +1961,8 @@ function global_parameters_SS (SS) {
     // console.log(SS.value > window_global_size);
     // console.log('reset');
     
+    // remove commas
+    SS.value = parseFloat(SS.value.replace(/,/g, ''));
     if (SS.value != window_SS_value_past && SS.value > global_size && (Validation("pos_number", SS.value) != "false")) {
         window_SS_value_past = SS.value;
         calculate_fe();
