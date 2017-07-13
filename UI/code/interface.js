@@ -98,6 +98,15 @@ var global_fd = global_delta;
 var qmark_color = "#090533"; //old value: #FA8072
 var qmark_size = "15px"; // old value: 12px
 
+//tutorial mode globals
+var tutorial_mode = true;
+var first_edit_window_closed = true;
+var first_variable_selected = true;
+var first_type_selected = true;
+var first_stat_selected = true;
+var first_completed_statistic = true;
+var first_reserved_epsilon = true;
+
 // List of possible statisitics
 var statistic_list = [];
 for (n = 0; n < rfunctions.rfunctions.length; n++) {
@@ -472,6 +481,7 @@ function submit(){
 		var submit_info = window.open("");  // Have to open in main thread, and then adjust in async callback, as most browsers won't allow new tab creation in async function
 		talktoRtwo(submit_info);  // so we're going to use the btn argument, which is present, but no longer used, to carry the new window object
 	}
+	
 }
 
 /////////////////////////////////////////////////////////////////////// 
@@ -602,6 +612,38 @@ function variable_selected (variable) {
     $('.live-search-list li').each(function() {
         $(this).show();
     });
+    if(first_variable_selected && tutorial_mode){
+    	hopscotch.endTour(true);  
+		var type_text =  "<ul><li>Numerical: The dataset entries for this variable should be treated as numbers.</li><li> Boolean: The dataset entries for this variable fall into two possible categories/bins. </li><li> Categorical: The dataset entries for this variable should be treated as categories/bins.</li></ul>";
+		var tour_target = "variable_type_" + variable;
+		var variable_selected_tour = {
+		  "id": "type_selection",
+		   "i18n": {
+			"doneBtn":'Ok'
+		  },
+		  "steps": [
+			{
+			  "target": tour_target,
+			  "placement": "right",
+			  "title": "Select variable type",
+			  "content": type_text,
+			  "yOffset":-20,
+			  "showCTAButton":true,
+			  "ctaLabel": "Disable these messages",
+			  "onCTA": function() {
+				hopscotch.endTour(true);
+				tutorial_mode = false;
+			  },
+			}
+		  ],
+		  "showCloseButton":false,
+		  "scrollDuration": 300,
+		  "onEnd":  function() {
+			   first_variable_selected = false;
+			  },
+		};
+    	hopscotch.startTour(variable_selected_tour);
+    }
 };
 
 
@@ -617,6 +659,9 @@ function create_new_variable (variable) {
     varlist_active.push(variable);
     inputted_metadata[variable.replace(/\s/g, '_')] = array_default();
     $("#bubble_form").prepend(make_bubble(variable));
+    //Default to open accordion
+    open_acc = "accordion_"+variable;
+    jamestoggle(document.getElementById(open_acc));
     console.log(previous_inputted_metadata);
 };
 
@@ -697,7 +742,7 @@ function delete_variable (variable) {
         document.getElementById(variable.replace(/\s/g, '_')).remove();
           talktoR();
         }
-
+   
         generate_epsilon_table();
         console.log(previous_inputted_metadata);
     
@@ -709,10 +754,6 @@ function populate_variable_selection_sidebar () {
 
     variable_selection_sidebar = 
     "<ul id='variable_sidebar' class='live-search-list'>";
-
-    console.log("inside pop sidebar");
-    console.log(variable_list);
-
 
     for (n = 0; n < variable_list.length; n++) {
         variable_selection_sidebar += "<li id='selection_sidebar_" + variable_list[n].replace(/\s/g, '_') + "' data-search-term='" + variable_list[n].toLowerCase() + "' onclick='variable_selected(\""+variable_list[n]+"\")'>" + variable_list[n] + "</li>";
@@ -807,7 +848,37 @@ function type_selected (type_chosen, variable) {
     $("#variable_type_" + variable).val(inputted_metadata[variable][column_index["Variable_Type"]]);
     alert("Changing types would result in all held statistics. Try removing some holds before changing types.")
   }
-
+	if(first_type_selected && tutorial_mode){
+		hopscotch.endTour(true);  
+		var tour_content =  "<ul><li>Mean: Average of the variable.</li><li> Histogram: Bar graph/counts of the categories/bins in the variable. </li><li> Quantile: Cumulative distribution function from which all quantiles can be extracted (e.g. median, percentiles, etc.)</li></ul> Note: available statistics depend on variable type.";
+		var tour_target = "released_statistics_" + variable;
+		var type_selected_tour = {
+		  "id": "stat_selection",
+		   "i18n": {
+			"doneBtn":'Ok'
+		  },
+		  "steps": [
+			{
+			  "target": tour_target,
+			  "placement": "bottom",
+			  "title": "Select statistics to release",
+			  "content": tour_content,
+			  "showCTAButton":true,
+			  "ctaLabel": "Disable these messages",
+			  "onCTA": function() {
+				hopscotch.endTour(true);
+				tutorial_mode = false;
+			  },
+			}
+		  ],
+		  "showCloseButton":false,
+		  "scrollDuration": 300,
+		  "onEnd":  function() {
+			   first_type_selected = false;
+			  },
+		};
+    	hopscotch.startTour(type_selected_tour);
+}
     console.log(previous_inputted_metadata);
 };
 
@@ -825,7 +896,6 @@ function list_of_statistics (type_chosen, variable) {
 
 
 function jamestoggle(button) {
-console.log(button);
     accordion(button);
     //console.log(button);
     //console.log(button.classList.contains("active"));
@@ -862,7 +932,8 @@ function make_bubble (variable) {
                 "</div>" +
                 "<hr style='margin-top: -0.25em'>" +
                 "<div id='necessary_parameters_" + variable + "' class='necessary_parameters'></div>" + 
-                "<div><button onclick='delete_variable(\"" + variable_raw + "\")'>Delete</button></div>" + 
+                "<div><button onclick='delete_variable(\"" + variable_raw + "\")' style='float:right;'>Delete variable</button></div>" + 
+            "<br>"+
             "</div>" +
         "</div>" +
         "<br>" +
@@ -907,7 +978,7 @@ function parameter_fields (variable, type_chosen) {
     // makes blank html text     
     var parameter_field = "<table>";
     if(needed_parameters.length > 0){
-    	parameter_field+="<div><p><span style='color:blue;line-height:1.1;display:block; font-size:small'>The selected statistic(s) require the metadata fields below. Fill these in with reasonable estimates that a knowledgeable person could make without having looked at the raw data. <b>Do not use values directly from your raw data as this may leak private information. </b> For example, 0-100 is a reasonable age range, even if the oldest person in your data is only 83. Any entry outside the range will be recoded (a 103 year old would be recoded to 100). Click <button type='button' class='manualinfo' data-load-url='psiIntroduction.html' data-toggle='modal' data-target='#myModal' data-id='statistics'  style='padding-left:0'><u>here for more information.</u></button></span></p></div>";
+    	parameter_field+="<div><p><span style='color:blue;line-height:1.1;display:block; font-size:small'>The selected statistic(s) require the metadata fields below. Fill these in with reasonable estimates that a knowledgeable person could make without having looked at the raw data. <b>Do not use values directly from your raw data as this may leak private information</b>. Click <button type='button' class='manualinfo' data-load-url='psiIntroduction.html' data-toggle='modal' data-target='#myModal' data-id='statistics'  style='padding-left:0'><u>here for more information.</u></button></span></p></div>";
     }
     
     //    "<button type='button' class='manualinfo' data-load-url='psiIntroduction.html' data-toggle='modal' data-target='#myModal' data-id='accuracy' style='float:right;padding-top:0.5em;'><span class='glyphicon glyphicon-question-sign' style='color:"+qmark_color+";font-size:"+qmark_size+";'></span></button>" +
@@ -995,7 +1066,38 @@ function Parameter_Populate (stat, stat_index, variable, type_chosen) {
         parameter_fields(variable, type_chosen);
       }
     }
-    console.log(previous_inputted_metadata);
+    if(first_stat_selected && tutorial_mode && type_chosen!="Boolean"){
+		hopscotch.endTour(true);  
+		var tour_content =  "Possible metadata:<ul><li>Upper Bound: Largest value this variable can take on.</li><li> Lower Bound: Smallest value this variable can take on. </li><li> Granularity: minimum positive distance between two different records.</li><li>Number of Bins: number of different categories the variable can take on.</li><li>Bin names: comma-separated list of categories the variable can take on (accepts shorthand 1:3 for 1,2,3 and A:C for A,B,C). </li></ul>When you have finished filling in the required metadata, hit tab, enter, or click anywhere outside the entry box to add your statistic.";
+		var tour_target = "necessary_parameters_" + variable;
+		var stat_selected_tour = {
+		  "id": "metadata_tour",
+		   "i18n": {
+			"doneBtn":'Ok'
+		  },
+		  "steps": [
+			{
+			  "target": tour_target,
+			  "placement": "bottom",
+			  "title": "Fill in the requested metadata",
+			  "content": tour_content,
+			  "showCTAButton":true,
+			  "ctaLabel": "Disable these messages",
+			  "onCTA": function() {
+				hopscotch.endTour(true);
+				tutorial_mode = false;
+			  },
+			}
+		  ],
+		  "showCloseButton":false,
+		  "scrollDuration": 300,
+		  "onEnd":  function() {
+			   first_stat_selected = false;
+			  },
+		};
+		hopscotch.startTour(stat_selected_tour);
+        console.log(previous_inputted_metadata);
+    }
 };
 
 // Stores metadata in memory
@@ -1316,10 +1418,17 @@ function toggle_epsilon_display () {
 }
 function toggle_reserved_epsilon_tool () {
   reserved_epsilon_bool = !reserved_epsilon_bool;
+  var sli = document.getElementById('slider_div');
+    if (sli.style.display === 'none') {
+        sli.style.display = 'block';
+    } else {
+        sli.style.display = 'none';
+    }
   generate_epsilon_table();
 }
 // Creates Epsilon 
 function generate_epsilon_table () {
+    var completed_statistic = false;
     var epsilon_table = 
     "<button type='button' class='manualinfo' data-load-url='psiIntroduction.html' data-toggle='modal' data-target='#myModal' data-id='accuracy' style='float:right;padding-top:0.5em;'><span class='glyphicon glyphicon-question-sign' style='color:"+qmark_color+";font-size:"+qmark_size+";'></span></button>" +
     "<table id='epsilon_table' style='width: calc(100% - 30px);'>" +
@@ -1359,6 +1468,7 @@ function generate_epsilon_table () {
                     "</td>"; 
 
                   if (inputted_metadata[varlist_active[n].replace(/\s/g, '_')][stat_index] == 2) {
+                  		completed_statistic = true;
                         if (display_epsilon_bool) {
                           epsilon_table += 
                           "<td>" +
@@ -1367,7 +1477,7 @@ function generate_epsilon_table () {
                         }
                         epsilon_table +=
                         "<td>" +
-                            "<div style='text-align:center'><input type='text' style='width:50px' value='" + (parseFloat(inputted_metadata[varlist_active[n].replace(/\s/g, '_')][stat_index + 2]).toFixed(4)).toString() + "' name='accuracy_" + statistic_list[m] + "' onclick='record_table()' onchange='ValidateAccuracy(this, \"pos_number\", \"" + varlist_active[n].replace(/\s/g, '_') + "\", \"" + statistic_list[m] + "\")'>" + "<button type='button' class='manualinfo' onclick='explain_accuracy(\"" + varlist_active[n] + "\",\"" + rfunctions.rfunctions[m].statistic + "\",\"" + (parseFloat(inputted_metadata[varlist_active[n].replace(/\s/g, '_')][stat_index + 2]).toFixed(4)).toString() + "\",\"" + inputted_metadata[varlist_active[n].replace(/\s/g, '_')][0] + "\")' style='cursor:help;width:0px;' title='Explains what the error measure means.'><span class='glyphicon glyphicon-question-sign' style='color:"+qmark_color+";font-size:"+qmark_size+";cursor:help;'></button></div>" + 
+                            "<div style='text-align:center'><input type='text' style='width:50px' value='" + (parseFloat(inputted_metadata[varlist_active[n].replace(/\s/g, '_')][stat_index + 2]).toFixed(4)).toString() + "' name='accuracy_" + statistic_list[m] + "' onclick='record_table()' onchange='ValidateAccuracy(this, \"pos_number\", \"" + varlist_active[n].replace(/\s/g, '_') + "\", \"" + statistic_list[m] + "\")'>" + "<button type='button' class='manualinfo' onclick='explain_accuracy(\"" + varlist_active[n] + "\",\"" + rfunctions.rfunctions[m].statistic + "\",\"" + (parseFloat(inputted_metadata[varlist_active[n].replace(/\s/g, '_')][stat_index + 2]).toFixed(4)).toString() + "\",\"" + inputted_metadata[varlist_active[n].replace(/\s/g, '_')][0] + "\")' style='cursor:help;width:0px;' title='Explains what the error measure means.'><span class='glyphicon glyphicon-question-sign' style='color:#FA8072;;font-size:"+qmark_size+";cursor:help;'></button></div>" + 
                         "</td>" +
                         "<td>";
                         
@@ -1402,28 +1512,164 @@ function generate_epsilon_table () {
     "</table>";
 
     var epsilon_toggle_button_text = display_epsilon_bool ? 'Hide Epsilon' : 'Show Epsilon';
-    var reserved_epsilon_toggle_button_text = reserved_epsilon_bool ? "Don&#146;t Reserve Epsilon" : "Reserve Epsilon";
+    var reserved_epsilon_toggle_button_text = reserved_epsilon_bool ? "Hide Slider" : "Reserve budget for future users";
 
-    epsilon_table += "<br><div style='text-align:center'><input onclick='toggle_epsilon_display()' type='button' value='" + epsilon_toggle_button_text + "' id='epsilon_toggle_button' style='width:125px'> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Confidence Level (&alpha;) <input name='beta' id='global_beta_edit' onfocusout='global_parameters_beta(this)' title='Confidence level for error estimates' value='" + global_beta + "' style='color: black;' size='4' type='text' placeholder='Beta'><button type='button' class='manualinfo' data-load-url='psiIntroduction.html' data-toggle='modal' data-target='#myModal' data-id='accuracy'><span class='glyphicon glyphicon-question-sign' style='color:"+qmark_color+";font-size:"+qmark_size+";'></span></button>";
+    epsilon_table += "<br><div style='text-align:center; float:left; margin:0 0 0 70px'><input onclick='toggle_epsilon_display()' type='button' value='" + epsilon_toggle_button_text + "' id='epsilon_toggle_button' style='width:125px'> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Confidence Level (&alpha;) <input name='beta' id='global_beta_edit' onfocusout='global_parameters_beta(this)' title='Confidence level for error estimates' value='" + global_beta + "' style='color: black;' size='4' type='text' placeholder='Beta'><button type='button' class='manualinfo' data-load-url='psiIntroduction.html' data-toggle='modal' data-target='#myModal' data-id='accuracy'><span class='glyphicon glyphicon-question-sign' style='color:"+qmark_color+";font-size:"+qmark_size+";'></span></button>";
+     $("#reserve_epsilon_toggle_button").remove();  // JM hacky solution to weird but that I can't figure out.
+    epsilon_table += "<br><div style='text-align:center; float:left; margin:20px 0 0 0'><input onclick='toggle_reserved_epsilon_tool()' type='button' value='" + reserved_epsilon_toggle_button_text + "' id='reserve_epsilon_toggle_button' style='width:225px'> </button>";
+   // epsilon_table += "<br><input  style='text-align:center; float:left; margin:20px 0 0 0' onclick='toggle_reserved_epsilon_tool()' type='button' value='" + reserved_epsilon_toggle_button_text + "' id='reserve_epsilon_toggle_button' style='width:225px'> </button></div>";
 
     // <br><br><input onclick='toggle_reserved_epsilon_tool();' value='" + reserved_epsilon_toggle_button_text + "' id='reserved_epsilon_toggle_button' type='button'></div>"
 
-    // if (reserved_epsilon_bool) {
-    //   epsilon_table += '' +
-    //     '<table id="reserved_epsilon_table">' +
-    //         '<tr id="reserved_epsilon_row">' +
-    //           '<td id="reserved_epsilon_slide">' +
-    //             '<input id="reserved_epsilon_slider" data-slider-id="reserved_epsilon_slider" data-slider-min="0" data-slider-max="100" data-slider-step="1" data-slider-value="0" />' +
-    //           '</td>' +
-    //           '<td id="reserved_epsilon_type">' +
-    //             '<input id="reserved_epsilon_input" type="number" onchange="reserved_epsilon_input_change(this)" value="0" style="width:45px;">' +
-    //           '</td>' +
-    //         '</tr>' +
-    //     '</table>';
-    // }
-
+//     if (reserved_epsilon_bool) {
+//     epsilon_table += '' + '<div style="text-align:center">' +
+//                   'Slider reserves a percentage of your budget for future users (optional) </br> (This will reduce the spendable budget in the current session)' +
+//                  '<br>'+
+//                 '<input style="width:90%;" id="re_slider" data-slider-id="RES" type="text" data-slider-min="0" data-slider-max="100" data-slider-step="1" data-slider-value="0" />' +
+//                  '<br>'+
+//                   '<span id="re_label">Reserved Budget: <span id="re_value">0</span>%</span>'+
+//                   "<button type='button' class='manualinfo' data-load-url='psiIntroduction.html' data-toggle='modal' data-target='#myModal' data-id='reserve'><span class='glyphicon glyphicon-question-sign' style='color:"+qmark_color+";font-size:"+qmark_size+";'></span></button>" +
+//                 '</div>';
+//       // epsilon_table += '' +
+// //         '<table id="reserved_epsilon_table">' +
+// //             '<tr id="reserved_epsilon_row">' +
+// //               '<td id="reserved_epsilon_slide">' +
+// //                 '<input id="reserved_epsilon_slider" data-slider-id="reserved_epsilon_slider" data-slider-min="0" data-slider-max="100" data-slider-step="1" data-slider-value="0" />' +
+// //               '</td>' +
+// //               '<td id="reserved_epsilon_type">' +
+// //                 '<input id="reserved_epsilon_input" type="number" onchange="reserved_epsilon_input_change(this)" value="0" style="width:45px;">' +
+// //               '</td>' +
+// //             '</tr>' +
+// //         '</table>';
+//     }
+    
+    /////
     document.getElementById('epsilon_sidebar_top').innerHTML = epsilon_table;
+    if(completed_statistic && first_completed_statistic && tutorial_mode){
+    	hopscotch.endTour(true);  
+		var variable_selected_tour = {
+		  "id": "completed_stat",
+		  "steps": [
+			{
+			  "target": "epsilon_table",
+			  "arrowOffset":260,
+			  "xOffset":50,
+			  "placement": "bottom",
+			  "title": "See the worst-case error estimates in your statistics",
+			  "content": "To request that certain statistics be made more or less accurate, you can directly edit the error cell corresponding to each statistic. <br><br>Since your entire budget is spent on the set of statistics that you have selected at any given time, you may only alter the errors when you have more than one statistic selected. Click the red question mark for an interpretation of the error. <br><br> Click Next to continue the tour.",
+			  "xOffset":70,
+			  "showCTAButton":true,
+			  "ctaLabel": "Disable these messages",
+			  "onCTA": function() {
+				hopscotch.endTour(true);
+				tutorial_mode = false;
+			  },
+			},
+			{
+			  "target": "hold_" + varlist_active[0].replace(/\s/g, '_') + "_" + statistic_list[0],
+			  "placement": "bottom",
+			  "xOffset":-280,
+			  "arrowOffset":260,
+			  "title": "Clicking 'hold' for a particular statistic fixes the portion of your budget to be spent on that statistic",
+			  "content": "As you add or edit the error for other statistics, the held statistics will maintain their portion of the budget.You cannot hold every statistic. <br><br> Click Next to continue the tour.",
+			  "showCTAButton":true,
+			  "ctaLabel": "Disable these messages",
+			  "onCTA": function() {
+				hopscotch.endTour(true);
+				tutorial_mode = false;
+			  },
+			},
+			{
+			  "target": global_beta_edit,
+			  "placement": "left",
+			  "yOffset":-20,
+			  //"arrowOffset":260,
+			  "title": "Change the confidence level of the error estimates here",
+			  "content": "When this number is set to &alpha;, the probability that the worst-case error for each of the above statistics will not exceed the estimates shown in the table is 1-&alpha;. By default, &alpha; is set to 0.05, providing a 95 percent confidence level in the error estimates. <br><br> Click Next to continue the tour.",
+			  "showCTAButton":true,
+			  "ctaLabel": "Disable these messages",
+			  "onCTA": function() {
+				hopscotch.endTour(true);
+				tutorial_mode = false;
+			  },
+			},
+			{
+			  "target": "edit_button",
+			  //"arrowOffset":260,
+			  "yOffset":-20,
+			  "placement": "left",
+			  "title": "You can change your global privacy loss parameters and population size here",
+			  "content": "Click Next to continue the tour.",
+			  "showCTAButton":true,
+			  "ctaLabel": "Disable these messages",
+			  "onCTA": function() {
+				hopscotch.endTour(true);
+				tutorial_mode = false;
+			  },
+			},
+			{
+			  "target": "reserve_epsilon_toggle_button",
+			  "placement": "bottom",
+			  "title": "Slide to reserve a percentage of your budget for future users (optional)",
+			  "content":"The privacy budget for any given dataset is finite. Each time someone requests statistics from a dataset, the overall budget is depleted. As the data depositor, you decide how your budget will be spent. <br> <br>You can reserve some or all of the budget for future users, allowing other researchers to choose which differentially private statistics are calculated. In turn, however, you reduce the amount of the budget that you get to spend on releasing statistics of your choice. Keep in mind that, as the data depositor, you may have the best sense of which statistics are the most valuable in your data. <br><br> Click Next to continue the tour.",
+			  "yOffset":40,
+			  "showCTAButton":true,
+			  "ctaLabel": "Disable these messages",
+			  "onCTA": function() {
+				hopscotch.endTour(true);
+				tutorial_mode = false;
+			  },
+			  "onShow": function(){
+			  	var sli = document.getElementById('slider_div');
+                sli.style.display = 'block';
+                generate_epsilon_table();
+			  },
+			  "onNext": function(){
+			  	var sli = document.getElementById('slider_div');
+                sli.style.display = 'none';
+                generate_epsilon_table();
+			  },
+			},
+			{
+			  "target": "submit_button",
+			  //"arrowOffset":260,
+			  //"xOffset":50,
+			  "placement": "top",
+			  "title": "Finalize your set of statistics here",
+			  "content": "When you have finished selecting which statistics to release, have provided the necessary metadata, and are satisfied with the error estimates, submit your decisions here. This will spend your budget and calculate your statistics. This cannot be undone.<br><br> Click Next to continue the tour.",
+			  "showCTAButton":true,
+			  "ctaLabel": "Disable these messages",
+			  "onCTA": function() {
+				hopscotch.endTour(true);
+				tutorial_mode = false;
+			   },
+			 },
+             {
+			  "target": "submit_info_button",
+			  //"arrowOffset":260,
+			  //"xOffset":50,
+			  "placement": "top",
+			  "title": "For more detailed information click any of the info buttons around the page",
+			  "content": "",
+			  "showCTAButton":true,
+			  "xOffset":-20,
+			  "ctaLabel": "Disable these messages",
+			  "onCTA": function() {
+				hopscotch.endTour(true);
+				tutorial_mode = false;
+			  },
+			  },
+		  ],
+		  "showCloseButton":false,
+		  "scrollDuration": 300,
+		  "onEnd":  function() {
+			   first_completed_statistic = false;
+			  },
+		};
+    	hopscotch.startTour(variable_selected_tour);
+    }
 };
+
 
 
 // https://github.com/seiyria/bootstrap-slider
@@ -1443,30 +1689,12 @@ slider.on("slide", function(sliderValue) {
   if(sliderValue == 100){
   	if(confirm("This will give your entire privacy budget to future users. Your session will end and the only statistics released about your data will be those requested by other researchers. Are you sure you would like to continue?")){
   		//Session ends
-  		location.reload();
+  		//location.reload();
   	}
   	else{
-  		//  setTimeout(function(){
-       //$('#re_slider').slider('refresh');
-    //  $(function() {
-//     $('#re_slider').slider();
-//     $('#re_slider').slider('setValue', 8);
-// });  
-//        //$("#re_slider").val(sliderValue);
-     //  $('#re_slider').slider('refresh');
-     //   $('#re_slider').slider('setValue', 8);
-      
-    //},500); // 200 = 0.2 seconds = 200 miliseconds
-
-
   		sliderValue = global_sliderValue;
-  		document.getElementById("re_value").textContent = sliderValue;
-  		//slider.slider('setValue', 8, true);
-  		//$('#re_slider').slider('setValue', 8, true);
-  		//console.log(slider);
-  		//$("#re_slider").slider();
-  		//$("#re_slider").val(sliderValue);
-  		//$("#re_slider").slider('setValue', sliderValue);
+  		
+        //JM can't figure out how to set slider back to slidervalue
   	}
   }
   if(sliderValue == 0){
@@ -1484,6 +1712,8 @@ slider.on("slide", function(sliderValue) {
   display_params();
   talktoR();
  });
+ 
+
 
 // JM function for displaying the privacy parameters 
 function display_params () {
@@ -1525,13 +1755,13 @@ function explain_accuracy (variable, statistic, accuracy, variable_type) {
 	var acc_prefix = "Releasing " + statistic + " for the variable " + variable +"." 
 	var acc_suffix = " Here the units are the same units the variable has in the dataset.";
 	if(statistic == "Mean"){
-		acc_explanation =  acc_prefix + " With probability " + prob +" the output Mean will differ from the true mean by at most "+accuracy +" units." +acc_suffix;
+		acc_explanation =  acc_prefix + " With probability " + prob +" the output mean will differ from the true mean by at most "+accuracy +" units." +acc_suffix;
 	}
 	if(statistic == "Histogram"){
-		acc_explanation =  acc_prefix + " Each output count will differ from its true count by at most "+accuracy+" units with probability "+prob+"."+acc_suffix;
+		acc_explanation =  acc_prefix + " Each output count will differ from its true count by at most "+accuracy+" records with probability "+prob+".";
 	}
 	if(statistic == "Quantile"){
-		acc_explanation =  acc_prefix + " For each t, the output count of the number of datapoints less than t will differ from the true count by at most "+accuracy+" units with probability "+prob+"."+acc_suffix;
+		acc_explanation =  acc_prefix + " For each t, the output count of the number of datapoints less than t will differ from the true count by at most "+accuracy+" records with probability "+prob+".";
 	}
 	alert(acc_explanation);
  // alert("Releasing the " + statistic + " for the variable: " + variable +", which is a " + variable_type + ". The accuracy at which this is released is: " + accuracy + ", which means (INSERT SIMPLE EXPLANATION).");
@@ -1960,9 +2190,14 @@ function global_parameters_SS (SS) {
     // console.log(window_global_size);
     // console.log(SS.value > window_global_size);
     // console.log('reset');
-    
+    console.log(SS.value);
+    if(SS.value == "" || SS.value == " "){
+		clear_SS();
+	}
     // remove commas
     SS.value = parseFloat(SS.value.replace(/,/g, ''));
+
+	
     if (SS.value != window_SS_value_past && SS.value > global_size && (Validation("pos_number", SS.value) != "false")) {
         window_SS_value_past = SS.value;
         calculate_fe();
@@ -2161,6 +2396,9 @@ function edit_window_closed () {
 
     document.getElementById('display_parameters').innerHTML = html;
   }
+  if(tutorial_mode && first_edit_window_closed){
+  	hopscotch.startTour(var_panel_tour);
+  }
 }
 
 
@@ -2233,11 +2471,36 @@ function overridedataset(newfileid) {
     	window.alert("No Dataset with fileid of " + newfileid + " found on beta.dataverse.org");
     }
 });
-
-
-
 }
 
+//////////////// 
+// Define tutorial mode tours.
+var var_panel_tour = {
+  "id": "var_panel",
+ "i18n": {
+  	"doneBtn":'Ok'
+  },
+  "steps": [
+    {
+      "target": "variable_sidebar",
+      "placement": "right",
+      "title": "Welcome to the PSI Budgeter!",
+      "content": "To begin, select a variable from your dataset.",
+      "showCTAButton":true,
+      "ctaLabel": "Disable these messages",
+      "onCTA": function() {
+        hopscotch.endTour(true);
+        tutorial_mode = false;
+      },
+    }
+  ],
+  
+  "showCloseButton":false,
+  "scrollDuration": 300,
+  "onEnd":  function() {
+       first_edit_window_closed = false;
+      },
+};
 
 
 

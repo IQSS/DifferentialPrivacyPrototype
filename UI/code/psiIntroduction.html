@@ -112,9 +112,6 @@ When using the tool you will select statistics to be released one by one. You wi
 The algorithms used to generate these statistics each require certain auxiliary information about the variables, which we refer to as <i>metadata</i>.  Different statistics require different metadata.  The tool will only ask for the metadata needed to complete the set of statistics you have chosen.  
 </p>
 <p>
-Remember that it is important to fill in the metadata <i>as though you have never seen the data</i>. For example, if there is an age variable in the dataset, a lower bound of 0 and an upper bound of 100 are reasonable guesses for the range of ages in any dataset.  If on the other hand, it is public information that the dataset is a survey of US voters, then putting an age lower bound of 18 would be appropriate. Using specific information from the dataset to fill in metadata can lead to a privacy violation. In the above example, this means that you should not look at the dataset to find the oldest or youngest person and record his or her age in the metadata, but rather provide a general, reasonable range.  If this task feels too unnatural, we recommend asking a research assistant to fill in the metadata. This should be somebody who has never seen the raw data but is familiar with how it was collected and the names of the variables. 
-</p>
-<p>
 Here are the meanings of the metadata values:
 </p>
 <p>
@@ -132,10 +129,13 @@ Here are the meanings of the metadata values:
 <p>
 <b>Bin names:</b> Comma-separated list of all possible categories the variable can take on. For example: red, white, blue. You can also use the shorthand 2:5 to represent 2, 3, 4, 5 or C:G to represent C, D, E, F, G for example. 
 </p>
+<p>
+Remember that it is important to fill in the metadata <i>as though you have never seen the data</i>. For example, if there is an age variable in the dataset, a lower bound of 0 and an upper bound of 100 are reasonable guesses for the range of ages in any dataset.  If on the other hand, it is public information that the dataset is a survey of US voters, then putting an age lower bound of 18 would be appropriate. Using specific information from the dataset to fill in metadata can lead to a privacy violation. In the above example, this means that you should not look at the dataset to find the oldest or youngest person and record his or her age in the metadata, but rather provide a general, reasonable range.  If this task feels too unnatural, we recommend asking a research assistant to fill in the metadata. This should be somebody who has never seen the raw data but is familiar with how it was collected and the names of the variables. 
+</p>
 </div>
 
 <div id="accuracy">
-<h4>Error and Alpha</h4>
+<h4>Error and Confidence Level (&alpha;)</h4>
 <p>
 Every statistic that you add has an associated error value. This is a theoretical bound on the worst-case error for the current parameters set for the statistic. There is a alpha (&alpha;) parameter that represents the probability that the error in the final computed statistics exceeds the error bound listed in the table. Alpha is set at a default of .05 and can be changed. The interpretation of these accuracies differs across statistics. If "error" is the number reported in the error column of the table and n is the number of people in the dataset, then the errors should be interpreted in the following ways for each statistic: 
 </p>
@@ -150,6 +150,13 @@ Every statistic that you add has an associated error value. This is a theoretica
 </p>
 <p>
 At any time you may request that certain statistics have more or less error by editing the error column. This will result in a reapportioning of the global epsilon across all of the statistics. There are limits to how accurate the statistics can be. This tool uses an optimal composition theorem for differential privacy to ensure that the statistics are as accurate as possible while maintaining the global privacy guarantee. 
+</p>
+</div>
+
+<div id="hold">
+<h4>Hold</h4>
+<p>
+Clicking “hold” for a particular statistic fixes the portion of your budget to be spent on that statistic. As you add, remove, or edit the error for other statistics, the held statistics will maintain their portion of the budget. You cannot hold every statistic.
 </p>
 </div>
 
