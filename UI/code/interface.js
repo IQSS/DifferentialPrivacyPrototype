@@ -722,6 +722,10 @@ function createCORSRequest(method, url, callback) {
 // Create the XHR object.
 function createCORSRequest2(method, url, callback) {
      var xhr = new XMLHttpRequest();
+     var FD  = new FormData();
+
+
+
      if ("withCredentials" in xhr) {
          // XHR for Chrome/Firefox/Opera/Safari.
          xhr.open(method, url, true);
@@ -785,6 +789,8 @@ function makeCorsRequest(url,callback, warningcallback, json) {
 // Make the actual CORS request.  Do NOT prefix with "tableJSON=" as used in rook
 function makeCorsRequest2(url,callback, warningcallback, json) {
      var xhr = createCORSRequest2('POST', url);
+     var fd = new FormData();
+
      if (!xhr) {
          alert('CORS not supported');
          return;
@@ -820,8 +826,9 @@ function makeCorsRequest2(url,callback, warningcallback, json) {
          console.log(xhr);
      };
      console.log("sending")
-     console.log("metadata: " + json + "; diffPrivate: true");
-     xhr.send("metadata: " + json + "; diffPrivate: true");   
+     #console.log("metadata: " + json + "; diffPrivate: true");
+     fd.append("metadata", json);
+     xhr.send(fd);   
 }
 
 
