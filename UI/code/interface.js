@@ -217,12 +217,22 @@ var dataverse_available = true;  // When Dataverse repository goes down, or is o
 // Set the fileid (Dataverse reference number) for dataset to use 
 var fileid = "";
 var possiblefileid = location.href.match(/[?&]fileid=(.*?)[$&]/);
+console.log(fileid)
+
+// Set the apitoken (Dataverse user reference number) for dataset and metadata access 
+var apitoken = "";
+var possibleapitoken = location.href.match(/[?&]key=(.*?)[$&]/);
+var apitokenavailable = false;
+console.log("possibleapitoken:")
+console.log(possibleapitoken)
+var writemetadataurl = "";
+
 
 
 // Move between UI test and prototype modes
 var UI = false;
 var possibleUI = location.href.match(/[?&]UI=(.*?)[$&]/);
-possibleUI = true;
+//possibleUI = true;
 if(possibleUI){
   UI = true;
   console.log("switching from prototype to test mode");
@@ -237,7 +247,22 @@ if(possibleUI){
   } else {
   	fileid = document.getElementById('dataselect').value;		// get fileid from selector box which will be at default value
   };
+
+  if(possibleapitoken){
+    apitoken = location.href.match(/[?&]key=(.*?)[$&]/)[1];    // get apitoken from URL
+    apitokenavailable = true;
+    writemetadataurl ="https://beta.dataverse.org/api/access/datafile/" + fileid + "/metadata/preprocessed?key=" + apitoken;
+
+    console.log("apitoken:")
+    console.log(apitoken)
+    console.log(writemetadataurl)
+  };
+
 };
+
+
+
+
 
 // When beta.dataverse.org is down, need to override getting files live from Repository:
 
@@ -617,7 +642,15 @@ function talktoRtwo(btn) {
 
    var estimated=false;
    var base = rappURL;
+
+   function storeMetaSuccess(){
+      console.log("metadata to dataverse: SUCCESS");
+   };
    
+   function storeMetaFail(){
+      console.log("metadata to dataverse: FAILURE");
+   }
+
 
    function statisticsSuccess(json) {  
       console.log("ran statisticsSuccess")
@@ -627,6 +660,19 @@ function talktoRtwo(btn) {
 
       var paragraph = "<pre> <code>" + released_statistics + "</code> </pre>";
       btn.document.write(splash(json));
+      // TODO Send JSON of releases to dataverse here
+      var releaseJSON = released_statistics.releaseJSON;
+      console.log(releaseJSON);
+
+      // In production, if PSI has been called with an API token, then try to deposit metadata to dataverse when DP statistics have been successfully released
+      if(apitokenavailable & production){
+        console.log("attempting to post metadata to dataverse")
+        console.log("writemetadataurl out: ", writemetadataurl);
+        makeCorsRequest(writemetadataurl, storeMetaSuccess, storeMetaFail, json);  
+      };
+
+
+
    }
 
    function estimateFail(warning) {
@@ -1064,8 +1110,6 @@ function list_of_multivar_statistics (type_chosen, variable) {
 	for(var i = 0; i < rfunctions.rfunctions.length; i++){
 		if(rfunctions.rfunctions[i].statistic_type[0].stype == "Multivar"){
 			reqs = rfunctions.rfunctions[i].requirements;
-			console.log("here");
-			console.log(reqs);
 			var allTrue = true;
 			for(var j = 0; j < reqs.length; j++){
 				req = reqs[j];
@@ -1430,7 +1474,7 @@ function multivar_parameter_fields(variable){
 				parameter_field += "<tr><td style='width:150px;vertical-align:middle;'><span title='" + rfunctions.parameter_info[metadata_list.indexOf(gen_param)].pinfo + "'>" + gen_param_no_underscore+ ": </span></td><td style='vertical-align:middle;'>";
 				
 				if(rfunctions.parameter_info[metadata_list.indexOf(gen_param)].input_type == "text"){
-					parameter_field += "<input type='text' value='" + gen_default_value + "' name='" + gen_param + "'id=General_input_" + gen_param + "_" + variable + "' onfocusin='record_table()' oninput='Parameter_Memory(this,\"" + variable + "\",\""+"General"+"\")' onchange='ValidateInput(this, \"" + rfunctions.parameter_info[metadata_list.indexOf(gen_param)].entry_type + "\", \"" + variable + "\")'></td></tr>";
+					parameter_field += "<input type='text' value='" + gen_default_value + "' name='" + gen_param + "'id=General_input_" + gen_param + "_" + variable + "' onfocusin='record_table()' oninput='Parameter_Memory(this,\"" + variable + "\",\""+"General"+"\")' onchange='ValidateInput(this, \"" + rfunctions.parameter_info[metadata_list.indexOf(gen_param)].entry_type + "\", \"" + variable + "\",\""+"General"+"\")'></td></tr>";
 			  	}
 			  	else if(rfunctions.parameter_info[metadata_list.indexOf(gen_param)].input_type == "multiple_choice_from_group_with_reqs"){
 			  		var reqlist = [];
@@ -1467,10 +1511,10 @@ function multivar_parameter_fields(variable){
 					parameter.value = default_val;
 					record_table();
 					Parameter_Memory(parameter, variable, v);
-					ValidateInput(parameter, rfunctions.parameter_info[metadata_list.indexOf(param)].entry_type, variable);
+					ValidateInput(parameter, rfunctions.parameter_info[metadata_list.indexOf(param)].entry_type, variable, v);
 				}
 				if(rfunctions.parameter_info[metadata_list.indexOf(param)].input_type == "text"){
-					parameter_field += "<input type='text' value='" + default_val + "' name='" + param + "'id="+v+"_input_" + param + "_" + variable + "' onfocusin='record_table()' oninput='Parameter_Memory(this,\"" + variable + "\",\""+v+"\")' onchange='ValidateInput(this, \"" + rfunctions.parameter_info[metadata_list.indexOf(param)].entry_type + "\", \"" + variable + "\")'></td></tr>";
+					parameter_field += "<input type='text' value='" + default_val + "' name='" + param + "'id="+v+"_input_" + param + "_" + variable + "' onfocusin='record_table()' oninput='Parameter_Memory(this,\"" + variable + "\",\""+v+"\")' onchange='ValidateInput(this, \"" + rfunctions.parameter_info[metadata_list.indexOf(param)].entry_type + "\", \"" + variable + "\",\""+v+"\")'></td></tr>";
 			  	}
 			  	else if(rfunctions.parameter_info[metadata_list.indexOf(param)].input_type == "multiple_choice_from_group_with_reqs"){
 			  		var reqlist = [];
@@ -1661,7 +1705,7 @@ function newtransform(x) {
     var jsonout = JSON.stringify({formula: formula, names: variable_list})
 
     console.log(jsonout)
-    urlcall = rappURL+"verifyTransform";
+    urlcall = rappURL+"verifyTransformapp";
     console.log("urlcall out: ", urlcall);
     makeCorsRequest(urlcall, newtransSuccess, newtransFailure, jsonout);
     }
@@ -1682,7 +1726,6 @@ function generateTransform() {
 
 
 function Validation (valid_entry, entry) {
-console.log("in validation");
     if (valid_entry == "none") {
         return "true";
     }
@@ -1773,8 +1816,9 @@ console.log("in validation");
 
 // Regex: http://www.w3schools.com/jsref/jsref_obj_regexp.asp
 // Validate form based on entry_type info
-function ValidateInput (input, valid_entry, variable) {
+function ValidateInput (input, valid_entry, variable, univar) {
     // Actual input validation
+    // if variable is a grouped variable, univar contains the single variable that was just edited
     var entry = input.value;
 
     if (entry == "") {
@@ -1783,9 +1827,14 @@ function ValidateInput (input, valid_entry, variable) {
     } 
 
     if (Validation(valid_entry, entry) == "false") {
-    //resume must handle multivar case here
-        inputted_metadata[variable][column_index[input.name]] = previous_inputted_metadata[variable][column_index[input.name]];
-        input.value = inputted_metadata[variable][column_index[input.name]];
+    	if(variable in grouped_var_dict){
+    		inputted_metadata[variable][column_index[input.name]][univar] = previous_inputted_metadata[variable][column_index[input.name]][univar];
+        	input.value = inputted_metadata[variable][column_index[input.name]][univar];
+    	}
+    	else{
+        	inputted_metadata[variable][column_index[input.name]] = previous_inputted_metadata[variable][column_index[input.name]];
+        	input.value = inputted_metadata[variable][column_index[input.name]];
+        }
     }
 
     epsilon_table_validation(variable, input);    
