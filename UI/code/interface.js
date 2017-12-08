@@ -825,8 +825,8 @@ function makeCorsRequest2(url,callback, warningcallback, json) {
          }
          console.log(xhr);
      };
-     console.log("sending")
-     #console.log("metadata: " + json + "; diffPrivate: true");
+     console.log("sending by FormData():" + json)
+     //console.log("metadata: " + json + "; diffPrivate: true");
      fd.append("metadata", json);
      xhr.send(fd);   
 }
