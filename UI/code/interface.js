@@ -135,7 +135,7 @@ for (var n = 0; n < rfunctions.type_label.length; n++) {
     type_list.push(rfunctions.type_label[n].stype);
 };
 
-
+var testJSON = "{\"test\":5}"
 
 // List of statistics per type and metadata required
 for (var n = 0; n < type_list.length; n++) {
@@ -666,9 +666,10 @@ function talktoRtwo(btn) {
 
       // In production, if PSI has been called with an API token, then try to deposit metadata to dataverse when DP statistics have been successfully released
       if(apitokenavailable & production){
+
         console.log("attempting to post metadata to dataverse")
         console.log("writemetadataurl out: ", writemetadataurl);
-        makeCorsRequest(writemetadataurl, storeMetaSuccess, storeMetaFail, json);  
+        makeCorsRequest(writemetadataurl, storeMetaSuccess, storeMetaFail, testJSON); //json);  
       };
 
 
