@@ -669,7 +669,7 @@ function talktoRtwo(btn) {
 
         console.log("attempting to post metadata to dataverse")
         console.log("writemetadataurl out: ", writemetadataurl);
-        makeCorsRequest(writemetadataurl, storeMetaSuccess, storeMetaFail, testJSON); //json);  
+        makeCorsRequest2(writemetadataurl, storeMetaSuccess, storeMetaFail, testJSON); //json);  
       };
 
 
@@ -759,6 +759,51 @@ function makeCorsRequest(url,callback, warningcallback, json) {
      console.log(json);
      xhr.send("tableJSON="+encodeURIComponent(json));   
 }
+
+
+// Make the actual CORS request.  Do NOT prefix with "tableJSON=" as used in rook
+function makeCorsRequest2(url,callback, warningcallback, json) {
+     var xhr = createCORSRequest('POST', url);
+     if (!xhr) {
+         alert('CORS not supported');
+         return;
+     }
+     // Response handlers for asynchronous load
+     // onload or onreadystatechange?
+    
+     xhr.onload = function() {
+        
+       var text = xhr.responseText;
+       console.log("text ", text);
+       var json = JSON.parse(text);   // should wrap in try / catch
+
+       // changed json format: make sure twoRavens has commit [master 460a2f5].
+       if (json.warning) {
+          console.log("calling warning callback")
+          warningcallback(json.warning)
+       }else{
+          callback(json);
+       }
+     };
+     xhr.onerror = function() {
+         // note: xhr.readystate should be 4, and status should be 200.  a status of 0 occurs when the url becomes too large
+         if(xhr.status==0) {
+             alert('xmlhttprequest status is 0. local server limitation?  url too long?');
+         }
+         else if(xhr.readyState!=4) {
+             alert('xmlhttprequest readystate is not 4.');
+         }
+         else {
+             alert('There was an error making the request.');
+         }
+         console.log(xhr);
+     };
+     console.log("sending")
+     console.log(json);
+     xhr.send(encodeURIComponent(json));   
+}
+
+
 
 
 
