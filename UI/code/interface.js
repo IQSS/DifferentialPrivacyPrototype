@@ -800,7 +800,7 @@ function makeCorsRequest2(url,callback, warningcallback, json) {
      };
      console.log("sending")
      console.log(json);
-     xhr.send(encodeURIComponent(json));   
+     xhr.send("metadata: " + encodeURIComponent(json) + "; diffPrivate: true");   
 }
 
 
