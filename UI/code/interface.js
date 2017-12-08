@@ -135,7 +135,7 @@ for (var n = 0; n < rfunctions.type_label.length; n++) {
     type_list.push(rfunctions.type_label[n].stype);
 };
 
-var testJSON = "{\"test\":5}"
+var testJSON = JSON.stringify({ test: 5})
 
 // List of statistics per type and metadata required
 for (var n = 0; n < type_list.length; n++) {
