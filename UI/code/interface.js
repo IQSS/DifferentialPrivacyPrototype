@@ -717,6 +717,27 @@ function createCORSRequest(method, url, callback) {
      return xhr;  
 }
 
+// CHANGED TO multipart Content-Type
+// below from http://www.html5rocks.com/en/tutorials/cors/ for cross-origin resource sharing
+// Create the XHR object.
+function createCORSRequest2(method, url, callback) {
+     var xhr = new XMLHttpRequest();
+     if ("withCredentials" in xhr) {
+         // XHR for Chrome/Firefox/Opera/Safari.
+         xhr.open(method, url, true);
+     } else if (typeof XDomainRequest != "undefined") {
+         // XDomainRequest for IE.
+         xhr = new XDomainRequest();
+         xhr.open(method, url);
+     } else {
+         // CORS not supported.
+         xhr = null;
+     }
+     
+     xhr.setRequestHeader('Content-Type', 'multipart/form-data');
+     return xhr;  
+}
+
 
 // Make the actual CORS request.
 function makeCorsRequest(url,callback, warningcallback, json) {
@@ -763,7 +784,7 @@ function makeCorsRequest(url,callback, warningcallback, json) {
 
 // Make the actual CORS request.  Do NOT prefix with "tableJSON=" as used in rook
 function makeCorsRequest2(url,callback, warningcallback, json) {
-     var xhr = createCORSRequest('POST', url);
+     var xhr = createCORSRequest2('POST', url);
      if (!xhr) {
          alert('CORS not supported');
          return;
