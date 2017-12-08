@@ -135,7 +135,7 @@ for (var n = 0; n < rfunctions.type_label.length; n++) {
     type_list.push(rfunctions.type_label[n].stype);
 };
 
-var testJSON = JSON.stringify({ test: 5})
+var testJSON = JSON.stringify({ test: 5});
 
 // List of statistics per type and metadata required
 for (var n = 0; n < type_list.length; n++) {
@@ -820,8 +820,8 @@ function makeCorsRequest2(url,callback, warningcallback, json) {
          console.log(xhr);
      };
      console.log("sending")
-     console.log(json);
-     xhr.send("metadata: " + encodeURIComponent(json) + "; diffPrivate: true");   
+     console.log("metadata: " + json + "; diffPrivate: true");
+     xhr.send("metadata: " + json + "; diffPrivate: true");   
 }
 
 
