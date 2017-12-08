@@ -738,7 +738,7 @@ function createCORSRequest2(method, url, callback) {
          xhr = null;
      }
      
-     xhr.setRequestHeader('Content-Type', 'multipart/form-data');
+     //xhr.setRequestHeader('Content-Type', 'multipart/form-data');
      return xhr;  
 }
 
