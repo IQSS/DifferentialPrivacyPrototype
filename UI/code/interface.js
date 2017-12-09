@@ -3388,7 +3388,7 @@ function UrlExists(url, cb){
 }
 
 function changedataset(newfileid) {
-  	var newurl = window.location.href.split('?')[0] + "?fileid=" + newfileid +"&";
+  	var newurl = window.location.href.split('?')[0] + "?fileid=" + newfileid +"&UI=1";
   	console.log(newurl);
   	window.location.href = newurl;
 }
