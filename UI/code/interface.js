@@ -692,7 +692,7 @@ function talktoRtwo(btn) {
    }
 // JMIdea always use functioning
   // if (SS_value_past != "") {
-    var jsonout = JSON.stringify({ dict: inputted_metadata, indices: column_index, stats: statistic_list, metadata: metadata_list, globals: {eps: global_fe, del: global_fd, Beta: global_beta, n: global_size, grouped_var_dict: grouped_var_dict}, fileid: fileid, transforms: generateTransform()});
+    var jsonout = JSON.stringify({ dict: inputted_metadata, indices: column_index, stats: statistic_list, metadata: metadata_list, globals: {eps: global_fe, del: global_fd, Beta: global_beta, n: global_size, grouped_var_dict: grouped_var_dict}, fileid: fileid, apitoken: apitoken, transforms: generateTransform()});
   // }
    //else {
    // var jsonout = JSON.stringify({ dict: inputted_metadata, indices: column_index, stats: statistic_list, metadata: metadata_list, globals: {eps: global_epsilon, del: global_delta, Beta: global_beta, n: global_size}, fileid: fileid });
