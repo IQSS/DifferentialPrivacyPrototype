@@ -214,53 +214,62 @@ var ddiurl = "";
 
 var dataverse_available = true;  // When Dataverse repository goes down, or is otherwise unavailable, this is a quick override for searching for metadata by url.
 
-// Set the fileid (Dataverse reference number) for dataset to use 
-var fileid = "";
-var possiblefileid = location.href.match(/[?&]fileid=(.*?)[$&]/);
-console.log(fileid)
 
-// Set the apitoken (Dataverse user reference number) for dataset and metadata access 
+// Find fields and values from URL
+var fileid = "";
 var apitoken = "";
-var possibleapitoken = location.href.match(/[?&]key=(.*?)[$&]/);
-var apitokenavailable = false;
-console.log("possibleapitoken:")
-console.log(possibleapitoken)
 var writemetadataurl = "";
 
+function getJsonFromUrl() {
+  var query = location.search.substr(1);
+  var result = {};
+  query.split("&").forEach(function(part) {
+    var item = part.split("=");
+    result[item[0]] = decodeURIComponent(item[1]);
+  });
+  return result;
+}
 
+var urlparameters = getJsonFromUrl(location.href);
+console.log("url parameters");
+console.log(urlparameters);
+
+if(urlparameters['fileid']){
+  fileid = urlparameters['fileid'];
+} else {
+  fileid = "5265";                                   // define the default dataset as PUMS
+}
+console.log("fileid:")
+console.log(fileid)
+
+if(urlparameters['key']){
+  apitoken = urlparameters['key'];
+  apitokenavailable = true;
+  writemetadataurl ="https://beta.dataverse.org/api/access/datafile/" + fileid + "/metadata/preprocessed?key=" + apitoken;
+
+  console.log("apitoken:")
+  console.log(apitoken)
+  console.log(writemetadataurl)
+
+}
 
 // Move between UI test and prototype modes
-var UI = false;
-var possibleUI = location.href.match(/[?&]UI=(.*?)[$&]/);
-//possibleUI = true;
-if(possibleUI){
-  UI = true;
+var UI = true;
+var UIvalue = "";
+if(urlparameters['UI']){
+  UIvalue = urlparameters['UI'];
+  UI = false;
+  $('#dataselect').val(fileid);                     // change value in selector box
+}
+console.log("UI:")
+console.log(UI)
+
+if(UI){
   console.log("switching from prototype to test mode");
   var element = document.getElementById("setdataset");     // delete the dataset selection header
   element.outerHTML = "";
   delete element;
-  fileid = 5265;                                             // define the default dataset as PUMS
-}else{
-  if(possiblefileid){
-  	fileid = location.href.match(/[?&]fileid=(.*?)[$&]/)[1];   	// get fileid from URL 
-  	$('#dataselect').val(fileid);         						// change value in selector box
-  } else {
-  	fileid = document.getElementById('dataselect').value;		// get fileid from selector box which will be at default value
-  };
-
-  if(possibleapitoken){
-    apitoken = location.href.match(/[?&]key=(.*?)[$&]/)[1];    // get apitoken from URL
-    apitokenavailable = true;
-    writemetadataurl ="https://beta.dataverse.org/api/access/datafile/" + fileid + "/metadata/preprocessed?key=" + apitoken;
-
-    console.log("apitoken:")
-    console.log(apitoken)
-    console.log(writemetadataurl)
-  };
-
 };
-
-
 
 
 
