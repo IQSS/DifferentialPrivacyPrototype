@@ -2673,6 +2673,9 @@ function explain_accuracy (variable, statistic, accuracy, variable_type) {
 	if(statistic == "ATT with Matching"){
 		acc_explanation = acc_prefix + " With probability "+prob+" the number of matched treated units used in the ATT analysis will differ from the true number of matched treated units by at most "+accuracy+" records. Note that this does not account for the additional error in the reported confidence interval."
 	}
+	if(statistic == "Logistic Regression" || statistic == "Probit Regression" || statistic == "OLS Regression"){
+		acc_explanation = acc_prefix + " With probability "+prob+" the objective function for the regression will be perturbed by at most "+accuracy+".";
+	}
 	alert(acc_explanation);
  // alert("Releasing the " + statistic + " for the variable: " + variable +", which is a " + variable_type + ". The accuracy at which this is released is: " + accuracy + ", which means (INSERT SIMPLE EXPLANATION).");
 }
