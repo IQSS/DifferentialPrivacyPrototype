@@ -24,7 +24,7 @@ var JSON_file = '{"rfunctions":[' +
      //'{"statistic": "Difference of Means", "stat_info": "Release a difference of means on the chosen variables", "statistic_type": [{"stype": "Multivar", "parameter": ["Outcome Variable", "Lower Bound", "Upper Bound"]}], "requirements":[]},' +     
     '{"statistic": "Quantile", "stat_info": "Release a cumulative distribution function at the given level of granularity (can extract median, percentiles, quartiles, etc from this).", "statistic_type": [{"stype": "Numerical", "parameter": ["Lower Bound", "Upper Bound", "Granularity"]}]} ],' +
     '"type_label": [ {"stype": "Numerical", "type_info": "Data should be treated as numbers"}, {"stype": "Boolean", "type_info": "Data contains two possible categories"}, {"stype": "Categorical", "type_info": "Datapoints should be treated as categories/bins"} ],' +
-    '"parameter_info": [ {"parameter": "Lower Bound", "entry_type": "number", "pinfo": "Minimum value that the chosen variable can take on", "input_type": "text"}, {"parameter": "Upper Bound", "entry_type": "number", "pinfo": "Maximum value that the chosen variable can take on", "input_type": "text"}, {"parameter": "Number of Bins", "entry_type": "pos_integer", "pinfo": "Number of distinct categories the variable can take on", "input_type": "text"}, {"parameter": "Granularity", "entry_type": "pos_integer", "pinfo": "The minimum positive distance between two different records in the data", "input_type": "text"}, {"parameter": "Treatment Variable", "entry_type": "none", "pinfo": "Treatment variable in the model", "input_type": "multiple_choice_from_group_with_reqs"}, {"parameter": "Bin Names", "entry_type": "none", "pinfo": "Give the names of all the bins", "input_type": "text"}, {"parameter": "Outcome Variable", "entry_type": "none", "pinfo": "Outcome variable in the model", "input_type": "multiple_choice_from_group_with_reqs"}, {"parameter": "Coarsening", "entry_type": "pos_number", "pinfo": "Coarsening for coarsened exact matching.", "input_type": "text"},{"parameter": "Matching Multiplier", "entry_type": "pos_int", "pinfo": "A positive integer indicating the structure of matched strata", "input_type": "text"} ] }';
+    '"parameter_info": [ {"parameter": "Lower Bound", "entry_type": "number", "pinfo": "Minimum value that the chosen variable can take on", "input_type": "text"}, {"parameter": "Upper Bound", "entry_type": "number", "pinfo": "Maximum value that the chosen variable can take on", "input_type": "text"}, {"parameter": "Number of Bins", "entry_type": "pos_integer", "pinfo": "Number of distinct categories the variable can take on", "input_type": "text"}, {"parameter": "Granularity", "entry_type": "pos_integer", "pinfo": "The minimum positive distance between two different records in the data", "input_type": "text"}, {"parameter": "Treatment Variable", "entry_type": "none", "pinfo": "Treatment variable in the model", "input_type": "multiple_choice_from_group_with_reqs"}, {"parameter": "Bin Names", "entry_type": "none", "pinfo": "Give the names of all the bins", "input_type": "text"}, {"parameter": "Outcome Variable", "entry_type": "none", "pinfo": "Outcome variable in the model", "input_type": "multiple_choice_from_group_with_reqs"}, {"parameter": "Coarsening", "entry_type": "pos_number", "pinfo": "Coarsening for coarsened exact matching", "input_type": "text"},{"parameter": "Matching Multiplier", "entry_type": "pos_int", "pinfo": "A positive integer indicating the structure of matched strata", "input_type": "text"} ] }';
 
 // Parses the function and varlist data structure
 var rfunctions = JSON.parse(JSON_file);
@@ -56,6 +56,8 @@ var varColor = '#f0f8ff';   //d3.rgb("aliceblue");
 var selVarColor = '#fa8072';    //d3.rgb("salmon");
 
 var released_statistics = "not yet built";
+
+var testJSON = JSON.stringify({ test: 5});
 
 
 // CSS when variable selected
@@ -108,7 +110,11 @@ var qmark_color = "#090533"; //old value: #FA8072
 var qmark_size = "15px"; // old value: 12px
 
 //tutorial mode globals
-var tutorial_mode = false; //todo make second tutorial for interactive
+var tutorial_mode = true; 
+if(interactive){
+	tutorial_mode = false;
+	//todo make second tutorial for interactive
+}
 var first_edit_window_closed = true;
 var first_variable_selected = true;
 var first_type_selected = true;
@@ -135,7 +141,7 @@ for (var n = 0; n < rfunctions.type_label.length; n++) {
     type_list.push(rfunctions.type_label[n].stype);
 };
 
-var testJSON = JSON.stringify({ test: 5});
+
 
 // List of statistics per type and metadata required
 for (var n = 0; n < type_list.length; n++) {
@@ -215,6 +221,7 @@ var ddiurl = "";
 var dataverse_available = true;  // When Dataverse repository goes down, or is otherwise unavailable, this is a quick override for searching for metadata by url.
 
 
+
 // Find fields and values from URL
 var fileid = "";
 var apitoken = "";
@@ -270,7 +277,6 @@ if(UI){
   element.outerHTML = "";
   delete element;
 };
-
 
 
 // When beta.dataverse.org is down, need to override getting files live from Repository:
@@ -675,10 +681,9 @@ function talktoRtwo(btn) {
 
       // In production, if PSI has been called with an API token, then try to deposit metadata to dataverse when DP statistics have been successfully released
       if(apitokenavailable & production){
-
         console.log("attempting to post metadata to dataverse")
         console.log("writemetadataurl out: ", writemetadataurl);
-        makeCorsRequest2(writemetadataurl, storeMetaSuccess, storeMetaFail, testJSON); //json);  
+        makeCorsRequest2(writemetadataurl, storeMetaSuccess, storeMetaFail, testJSON);  
       };
 
 
@@ -726,15 +731,12 @@ function createCORSRequest(method, url, callback) {
      return xhr;  
 }
 
+
 // CHANGED TO multipart Content-Type
 // below from http://www.html5rocks.com/en/tutorials/cors/ for cross-origin resource sharing
 // Create the XHR object.
 function createCORSRequest2(method, url, callback) {
      var xhr = new XMLHttpRequest();
-     var FD  = new FormData();
-
-
-
      if ("withCredentials" in xhr) {
          // XHR for Chrome/Firefox/Opera/Safari.
          xhr.open(method, url, true);
@@ -745,11 +747,10 @@ function createCORSRequest2(method, url, callback) {
      } else {
          // CORS not supported.
          xhr = null;
-     }
-     
-     //xhr.setRequestHeader('Content-Type', 'multipart/form-data');
+     }     
      return xhr;  
 }
+
 
 
 // Make the actual CORS request.
@@ -796,6 +797,7 @@ function makeCorsRequest(url,callback, warningcallback, json) {
 
 
 // Make the actual CORS request.  Do NOT prefix with "tableJSON=" as used in rook
+// Use FormData for multipart request
 function makeCorsRequest2(url,callback, warningcallback, json) {
      var xhr = createCORSRequest2('POST', url);
      var fd = new FormData();
@@ -839,8 +841,6 @@ function makeCorsRequest2(url,callback, warningcallback, json) {
      fd.append("metadata", json);
      xhr.send(fd);   
 }
-
-
 
 
 
@@ -994,11 +994,11 @@ function delete_variable (variable) {
             document.getElementById(variable.replace(/\s/g, '_')).remove();
 
             // TODO will need to remove all other associated data
-            if(transforms_data[variable]) {
-                delete transforms_data[variable]
-                variable_list.splice(variable_list.indexOf(variable), 1)
-                remove_variable_from_sidebar(variable)
-            }
+           //  if(transforms_data[variable]) {
+//                 delete transforms_data[variable]
+//                 variable_list.splice(variable_list.indexOf(variable), 1)
+//                 remove_variable_from_sidebar(variable)
+//             }
 
             talktoR();
         }
@@ -1099,10 +1099,10 @@ function type_selected (type_chosen, variable) {
     variable = variable.replace(/\s/g, '_');
     previous_inputted_metadata = JSON.parse(JSON.stringify(inputted_metadata));
     mytype = "Numerical";
-    reset(inputted_metadata[variable], type_chosen, variable); //is this the behavior we want for multivar?
+    reset(inputted_metadata[variable], type_chosen, variable);
     
     if (!areAllHeld1()) {
-		inputted_metadata[variable][0] = type_chosen; //RESUME HERE
+		inputted_metadata[variable][0] = type_chosen; 
   		generate_epsilon_table();
 		if (type_chosen != "default") {
 			document.getElementById("released_statistics_" + variable).innerHTML = list_of_statistics(type_chosen, variable);
@@ -1137,7 +1137,7 @@ function type_selected (type_chosen, variable) {
   }
 	if(first_type_selected && tutorial_mode){
 		hopscotch.endTour(true);  
-		var tour_content =  "<ul><li>Mean: Average of the variable.</li><li> Histogram: Bar graph/counts of the categories/bins in the variable. </li><li> Quantile: Cumulative distribution function from which all quantiles can be extracted (e.g. median, percentiles, etc.)</li></ul> Note: available statistics depend on variable type.";
+		var tour_content =  "<ul><li>Mean: Average of the variable.</li><li> Histogram: Bar graph/counts of the categories/bins in the variable. </li><li> Quantile: Cumulative distribution function from which all quantiles can be extracted (e.g. median, percentiles, etc.)</li><li>Regression models: OLS, Logistic, and Probit regression models.</li><li>Average Treatment Effect on the Treated (ATT with Matching): Performs coarsened exact matching and then uses the matched dataset to compute the ATT and a confidence interval.</li></ul> Note: available statistics depend on variable type.";
 		var tour_target = "released_statistics_" + variable;
 		var type_selected_tour = {
 		  "id": "stat_selection",
@@ -1204,6 +1204,9 @@ function list_of_multivar_statistics (type_chosen, variable) {
 				options += "<input type='checkbox' name='" + rfunctions.rfunctions[i].statistic.replace(/\s/g, '_') + "' onclick='Parameter_Populate(this," + n + ",\"" + variable + "\",\"" + 'Multivar' + "\"); generate_epsilon_table();' id='"+ rfunctions.rfunctions[i].statistic.replace(/\s/g, '_') + "_" + variable + "'> <span>" + rfunctions.rfunctions[i].statistic + "</span><br>";
 			}
 		}	
+	}
+	if(options == ""){
+		options = "There are no statistics available that work with the chosen set of variable types.";
 	}
 	return options;
 }
@@ -1417,7 +1420,7 @@ function parameter_fields (variable, type_chosen) {
 		// makes blank html text     
 		var parameter_field = "<table>";
 		if(needed_parameters.length > 0){
-			parameter_field+="<div><p><span style='color:blue;line-height:1.1;display:block; font-size:small'>The selected statistic(s) require the metadata fields below. Fill these in with reasonable estimates that a knowledgeable person could make without having looked at the raw data. <b>Do not use values directly from your raw data as this may leak private information</b>. Click <button type='button' class='manualinfo' data-load-url='psiIntroduction.html' data-toggle='modal' data-target='#myModal' data-id='statistics'  style='padding-left:0'><u>here for more information.</u></button></span></p></div>";
+			parameter_field+="<div><p><span style='color:blue;line-height:1.1;display:block; font-size:small'>The selected statistic(s) require the metadata fields below. Fill these in with reasonable estimates that a knowledgeable person could make without having looked at the raw data. <b>Do not use values directly from your raw data as this may leak private information</b>. Click <button type='button' class='manualinfo' data-load-url='psiIntroduction.html' data-toggle='modal' data-target='#myModal' data-id='metadata'  style='padding-left:0'><u>here for more information.</u></button></span></p></div>";
 		}
 	
 		//    "<button type='button' class='manualinfo' data-load-url='psiIntroduction.html' data-toggle='modal' data-target='#myModal' data-id='accuracy' style='float:right;padding-top:0.5em;'><span class='glyphicon glyphicon-question-sign' style='color:"+qmark_color+";font-size:"+qmark_size+";'></span></button>" +
@@ -1620,6 +1623,7 @@ function multivar_parameter_fields(variable){
  }
 
 
+
 function make_missing_field(variable, type_chosen){
 	var options;
     if(type_chosen == "Numerical"){
@@ -1710,7 +1714,7 @@ function Parameter_Populate (stat, stat_index, variable, type_chosen) {
     }
     if(first_stat_selected && tutorial_mode && type_chosen!="Boolean"){
 		hopscotch.endTour(true);  
-		var tour_content =  "Possible metadata:<ul><li>Upper Bound: Largest value this variable can take on.</li><li> Lower Bound: Smallest value this variable can take on. </li><li> Granularity: minimum positive distance between two different records.</li><li>Number of Bins: number of different categories the variable can take on.</li><li>Bin names: comma-separated list of categories the variable can take on (accepts shorthand 1:3 for 1,2,3 and A:C for A,B,C). </li></ul>When you have finished filling in the required metadata, hit tab, enter, or click anywhere outside the entry box to add your statistic.";
+		var tour_content =  "To see a description of possible metadata, click the link in the blue text above. When you have finished filling in the required metadata, hit tab, enter, or click anywhere outside the entry box to add your statistic.";
 		var tour_target = "necessary_parameters_" + variable;
 		var stat_selected_tour = {
 		  "id": "metadata_tour",
@@ -1926,7 +1930,6 @@ function ValidateInput (input, valid_entry, variable, univar) {
 
 
 
-
 // Epsilon Table Validation
 function epsilon_table_validation (variable, input) {
 	if(variable in grouped_var_dict){
@@ -2107,8 +2110,17 @@ function pass_to_r_metadata (variable, input, ppparameter) {
 	}
     if (areAllHeld1()) { 
       alert("Removing metadata would result in all held statistics. Try removing some holds before removing metadata."); 
-      inputted_metadata = JSON.parse(JSON.stringify(previous_inputted_metadata));
-      input.value = inputted_metadata[variable][column_index[input.name]] //resume handle multivar case here
+      if(variable in grouped_var_dict){
+      	 inputted_metadata = JSON.parse(JSON.stringify(previous_inputted_metadata));
+      	 var str = input.id;
+      	 var index = str.indexOf("_input");
+    	 var univar = str.substring(0,index);
+      	 input.value = inputted_metadata[variable][column_index[input.name]][univar];
+      }
+      else{
+      	inputted_metadata = JSON.parse(JSON.stringify(previous_inputted_metadata));
+      	input.value = inputted_metadata[variable][column_index[input.name]] 
+      }
     }
     else {
     if (should_call_r > 0) {
@@ -2468,6 +2480,34 @@ function generate_epsilon_table () {
 			  },
 			},
 			{
+			  "target": "group_vars",
+			  //"arrowOffset":260,
+			  "yOffset":-20,
+			  "placement": "bottom",
+			  "title": "Click here to release multivariate statistics",
+			  "content": "For statistics involving more than one variable (e.g. regressions, ATT with matching) begin by clicking here and placing the relevant variables in a group. The grouped variable will then be added to the variable list and you can release statistics on the group.",
+			  "showCTAButton":true,
+			  "ctaLabel": "Disable these messages",
+			  "onCTA": function() {
+				hopscotch.endTour(true);
+				tutorial_mode = false;
+			  },
+			},
+			{
+			  "target": "new-transform-box",
+			  //"arrowOffset":260,
+			  "yOffset":-20,
+			  "placement": "bottom",
+			  "title": "Perform variable transformations on the dataset",
+			  "content": "For example, if you want to run a regression involving log(income) rather than income, you can type 'myNewVariable <- log(income)' into the formula box. If 'income' is a variable in your dataset, a new variable called myNewVariable corresponding to the log of the income variable will spawn and you can release statistics about it. <br> <br> Click the help button next to the transformation box for more information.",
+			  "showCTAButton":true,
+			  "ctaLabel": "Disable these messages",
+			  "onCTA": function() {
+				hopscotch.endTour(true);
+				tutorial_mode = false;
+			  },
+			},
+			{
 			  "target": "submit_button",
 			  //"arrowOffset":260,
 			  //"xOffset":50,
@@ -2629,6 +2669,9 @@ function explain_accuracy (variable, statistic, accuracy, variable_type) {
 	}
 	if(statistic == "Quantile"){
 		acc_explanation =  acc_prefix + " For each t, the output count of the number of datapoints less than t will differ from the true count by at most "+accuracy+" records with probability "+prob+".";
+	}
+	if(statistic == "ATT with Matching"){
+		acc_explanation = acc_prefix + " With probability "+prob+" the number of matched treated units used in the ATT analysis will differ from the true number of matched treated units by at most "+accuracy+" records. Note that this does not account for the additional error in the reported confidence interval."
 	}
 	alert(acc_explanation);
  // alert("Releasing the " + statistic + " for the variable: " + variable +", which is a " + variable_type + ". The accuracy at which this is released is: " + accuracy + ", which means (INSERT SIMPLE EXPLANATION).");
@@ -3339,9 +3382,6 @@ function edit_window_closed () {
 }
 
 
-
-
-
 function add_reserved_epsilon_field () {
   $('#reserved_epsilon_row').show();
   window_reserved_epsilon_toggle = true;
@@ -3438,9 +3478,6 @@ var var_panel_tour = {
        first_edit_window_closed = false;
       },
 };
-
-
-
 
 
 

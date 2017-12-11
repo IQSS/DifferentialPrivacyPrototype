@@ -6,10 +6,10 @@ img {
 </style>
 <div id="welcome">
 <p>
-The following demonstrates a tool that helps data depositors release information describing their datasets while protecting privacy by allowing them to distribute a privacy budget across different possible statistical calculations. This tool is called the <i>budgeter</i>.  Data depositors select which statistics they would like to calculate and are given estimates of how accurately each statistic can be computed. They can also redistribute their privacy budget according to which statistics they think are most valuable in their dataset. 
+This tool helps data depositors release information describing their datasets while protecting privacy by allowing them to distribute a privacy budget across different possible statistical calculations. This tool is called the <i>budgeter</i>.  Data depositors select which statistics they would like to calculate and are given estimates of how accurately each statistic can be computed. They can also redistribute their privacy budget according to which statistics they think are most valuable in their dataset. 
 </p>
 <p>
-Below is found a brief introduction to differential privacy, the mathematical framework that guarantees privacy, as well as an overview of all the features and requirements of this tool.  This explanatory page can be reviewed at any point by clicking any of the information buttons, marked <span class="glyphicon glyphicon-question-sign" style="color:"+qmark_color+";font-size: "+qmark_size+";"></span>.
+Below is a brief introduction to differential privacy, the mathematical framework that guarantees privacy, as well as an overview of all the features and requirements of this tool.  This explanatory page can be reviewed at any point by clicking any of the information buttons, marked <span class="glyphicon glyphicon-question-sign" style="color:"+qmark_color+";font-size: "+qmark_size+";"></span>.
 </p>
 <br>
 <br>
@@ -32,7 +32,6 @@ The definition of differential privacy emerged from a long line of work applying
 <h4>Data requirements</h4>
 <ul>
 <li>Your dataset must be tabular with rows corresponding to individuals and columns corresponding to variables (attributes). </li>
-<li>There should not be any missing values (empty cells in the table). </li>
 <li>It is assumed that the total number of observations (rows) in the dataset is public information and can be released.  This value is not treated in a privacy-preserving manner.</li>
 </ul>
 </div>
@@ -67,15 +66,12 @@ For a given level of privacy protection, there are limits on how much statistica
 		<li>Information that would cause severe harm to individuals or the University if disclosed: It is not recommended that the PSI tool be used with such severely sensitive data.</li>
 	</ol> 
    </p>
-   <p>
-	Set the privacy loss parameters for your dataset below:
-   </p>
 </div>   
 
 <div id="functioning">
 <h4>Functioning Privacy Loss Parameters</h4>
 <p>
-There might be some instances when the global privacy guarantee (&epsilon;, &delta;) will be different from the budget that is actually available to spend in the current session. This occurs when using the Secrecy of the Sample or the Reserve Budget features. When using Secrecy of the Sample, your budget will be larger than expected. On the other side, reserving budget for future users is achieved by limiting your own budget. In both of these cases, we represent the amount of budget that can be spent in the current session as "functioning epsilon" and "functioning delta". When relevant, these will appear next to the global epsilon and delta in the top right of the interface.
+There might be some instances when the global privacy guarantee (&epsilon;, &delta;) will be different from the budget that is actually available to spend in the current session. This occurs when using the Secrecy of the Sample or the Reserve Budget features. When using Secrecy of the Sample, your budget will be larger than expected. On the other side, reserving budget for future users is achieved by limiting your own budget. In both of these cases, we represent the amount of budget that actually can be spent in the current session as "functioning epsilon" and "functioning delta". When relevant, these will appear next to the global epsilon and delta in the top right of the interface.
 </p>
 </div>
 
@@ -95,21 +91,30 @@ In order to obtain this boost, you are required to provide an estimate of the si
 <p>
 When using the tool you will select statistics to be released one by one. You will begin by choosing a variable from the left panel. This will spawn a box in the center panel that will prompt you to fill in the variable type (e.g. boolean, numerical, categorical), and then to select which statistic(s) to compute for that variable. We currently support the following statistics: 
 </p>
+<h5><b>Univariate Statistics:</b></h5>
 <p>
 <b>Mean:</b> Computes the average value of the variable.
 </p>
 <p>
-<b>Histogram:</b> Computes a bar graph of the different values represented in the variable. This is meant to be used with categorical variables, where values are labels and not to be interpreted as quantities. For example, a religion variable will have a discrete set of values it can take on that are not numerical. 
+<b>Histogram:</b> Computes a bar graph of the different values represented in the variable. 
 </p>
 <p>
 <b>Quantile:</b> This computes the full cumulative distribution function, or CDF, of the variable, which can then be used to calculate any desired quantile (e.g. the median or percentiles). 
+</p>
+<h5><b>Multivariate Statistics</b></h5>
+To compute a statistic that involves more than one variable, click the button labelled "Multivariate Statistics". A window will pop up asking you to choose the set of variables that will be involved in the multivarate statistic. Once you select these, a new "grouped" variable will show up in the left variable panel. Select this new variable to release a multiviate statistic. 
+<p>
+<b>Regression models:</b> The tool supports Ordinary Least Squares, Logistic, and Probit regression models. 
+</p>
+<p>
+<b>Average Treatment Effect on the Treated (ATT with Matching):</b> First performs coarsened exact matching and then uses the matched dataset to compute the ATT and a confidence interval.
 </p>
 </div>
 
 <div id="metadata">
 <h4>Entering Metadata</h4>
 <p>
-The algorithms used to generate these statistics each require certain auxiliary information about the variables, which we refer to as <i>metadata</i>.  Different statistics require different metadata.  The tool will only ask for the metadata needed to complete the set of statistics you have chosen.  
+The algorithms used to generate these statistics may require certain auxiliary information about the variables, which we refer to as <i>metadata</i>.  Different statistics require different metadata.  The tool will only ask for the metadata needed to complete the set of statistics you have chosen.  
 </p>
 <p>
 Here are the meanings of the metadata values:
@@ -124,20 +129,42 @@ Here are the meanings of the metadata values:
 <b>Granularity:</b> The minimum positive distance between two different records. For example, if income is reported to the nearest $100, then the granularity of the variable is 100. If income is reported exactly to the cent, then granularity is .01. 
 </p>
 <p>
-<b>Number of Bins:</b> The number of different categories present in the data. For example, yes or no questions have 2 bins. 
+<b>Number of Bins:</b> For numerical data, this specifies the number of bins to group the data into for histogram. 
 </p>
 <p>
-<b>Bin names:</b> Comma-separated list of all possible categories the variable can take on. For example: red, white, blue. You can also use the shorthand 2:5 to represent 2, 3, 4, 5 or C:G to represent C, D, E, F, G for example. 
+<b>Bin names:</b> Comma-separated list of all possible categories the variable can take on. For example: red, white, blue. You can also use the shorthand 2:5 to represent 2, 3, 4, 5 or C:G to represent C, D, E, F, G for example. For histograms this input is optional but we strongly recommend supplying it as histograms computed without bin names are typically much less accurate. 
+</p>
+<p>
+<b>Coarsening:</b> Specifies the scale of the numerical variables that are to be matched on.
+</p>
+<p>
+<b>Matching Multiplier:</b> A positive integer indicating the structure of matched strata.
 </p>
 <p>
 Remember that it is important to fill in the metadata <i>as though you have never seen the data</i>. For example, if there is an age variable in the dataset, a lower bound of 0 and an upper bound of 100 are reasonable guesses for the range of ages in any dataset.  If on the other hand, it is public information that the dataset is a survey of US voters, then putting an age lower bound of 18 would be appropriate. Using specific information from the dataset to fill in metadata can lead to a privacy violation. In the above example, this means that you should not look at the dataset to find the oldest or youngest person and record his or her age in the metadata, but rather provide a general, reasonable range.  If this task feels too unnatural, we recommend asking a research assistant to fill in the metadata. This should be somebody who has never seen the raw data but is familiar with how it was collected and the names of the variables. 
 </p>
 </div>
 
+
+<div id="missingData">
+<h4>Missing Data</h4>
+<p>
+Most real world datasets contain some missing data. PSI has a few ways of handling this described below.
+</p>
+<ul>
+<li> <b>Random value:</b> This is the default for numerical variables. Missing values are imputed uniformly at random from the range supplied in the metadata.
+<li> <b>Fixed value:</b> All missing values are replaced with the same value, which you supply when you select 'Fixed value'.
+<li> <b>Custom range:</b> Missing values are imputed uniformly at random from a custom range that you supply when you pick this option. <b>Important</b> ranges must be given in the following format: lower:upper where both 'lower' and 'upper' are numbers. 
+<li> <b>Separate bin:</b> This is the default for categorical variables. Missing values will be treated as a separate category in the dataset.
+<li> <b>Random bin:</b> This is the default for boolean variables. Missing values are placed into a uniformly random category from the dataset.
+</ul>
+For all regressions, the procedure described in 'Random value' is run for each variable involved in the regression.  
+</div>
+
 <div id="accuracy">
 <h4>Error and Confidence Level (&alpha;)</h4>
 <p>
-Every statistic that you add has an associated error value. This is a theoretical bound on the worst-case error for the current parameters set for the statistic. There is a alpha (&alpha;) parameter that represents the probability that the error in the final computed statistics exceeds the error bound listed in the table. Alpha is set at a default of .05 and can be changed. The interpretation of these accuracies differs across statistics. If "error" is the number reported in the error column of the table and n is the number of people in the dataset, then the errors should be interpreted in the following ways for each statistic: 
+Every statistic that you add has an associated error value. This is a theoretical bound on the worst-case error for the current parameters set for the statistic. There is a confidence level parameter alpha (&alpha;) that represents the probability that the error in the final computed statistics exceeds the error bound listed in the table. Alpha is set at a default of .05 and can be changed. The interpretation of these accuracies differs across statistics. If "error" is the number reported in the error column of the table and n is the number of people in the dataset, then the errors should be interpreted in the following ways for each statistic: 
 </p>
 <p>
 <b>Mean:</b>   With probability 1-&alpha;:  <center> true mean - error &le; output mean  &le; true mean + error </center>
@@ -147,6 +174,12 @@ Every statistic that you add has an associated error value. This is a theoretica
 </p>
 <p>
 <b>Histogram:</b>  For each bar in the outputted bar graph we have the following with probability 1-&alpha;: <center> true count-error &le; output count on that bar &le; true count + error </center>
+</p>
+<p>
+<b>Regressions:</b>  
+</p>
+<p>
+<b>ATT with Matching:</b> With probability 1-&alpha;: the number of matched treated units used in the ATT algorithm will differ from the true number by at most error. Note that this does not take into account the additional noise in the confidence interval.
 </p>
 <p>
 At any time you may request that certain statistics have more or less error by editing the error column. This will result in a reapportioning of the global epsilon across all of the statistics. There are limits to how accurate the statistics can be. This tool uses an optimal composition theorem for differential privacy to ensure that the statistics are as accurate as possible while maintaining the global privacy guarantee. 
@@ -167,6 +200,32 @@ PSI gives data depositors the option to reserve a portion of their privacy budge
 </p>
 <p>
 In the bottom right corner of the interface there is a slider to control what percentage of the privacy budget is being reserved for future users. 
+</p>
+</div>
+
+<div id="transformer">
+<h4>Variable Transformations</h4>
+<p>
+This tool allows you to apply R-like transformations to the dataset before running statistics.
+</p>
+<p>
+Transformations have the form `my_new_variable_name <- some formula`. For example: 
+<ul>
+<li> You could take the log of a variable: `log_income <- log(income)`  
+<li> Take the sum of multiple variables: `total <- profits + losses`  
+<!--Use results of transformations in later ones (EXPERIMENTAL): `shifted_log_income <- log_income + 10`  
+Use R-like ifelse expressions: `canDrink <- ifelse(country == âUnited Statesâ, age >= 21, age >= 18)`  
+Do NA coercion: `ageDefault30 <- ifelse(is.na(age), age, 30`  -->
+<li> If you prefer, use `=` instead of `<-`: `log_income = log(income)`  
+<li>More math: `base ** exponent`, equivalently `base ^ exponent`, `sqrt(x)`, `exp(x)`, `log(x)` (natural log), `log(x, base)`.  
+<li>Comparisons: `==, !=` (work for strings), `<, >, <=, >=` (do not work for strings)  
+<li>Boolean logic: `&&, ||` or equivalently `&, |`.  
+<li>Type coercion: `as.numerical(x), as.logical(x), as.categorical(x)` or equivalently `as.character(x)` 
+</ul> 
+</p>
+<p>
+Just like R, we always try to coerce types to do the most logical thing.
+For example, `3.4 * TRUE` is `3.4`, `3.4 * FALSE` is `0.0`.
 </p>
 </div>
 

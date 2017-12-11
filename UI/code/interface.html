@@ -119,10 +119,8 @@
             <input id='live-search-box' style="display:none" type="text" class="live-search-box" placeholder="Search variable names">
             <!-- Variable List -->
             <ul id="variable_sidebar" class="live-search-list"></ul> 
-           <button id="group_vars" class="group-vars-button" onclick="group_vars_window()">Multivariate Statistics</button>
-
-            <input id="new-transform-box" style="display:none" type="text" class="transformation-box" placeholder="Name <- Formula" onfocusout="newtransform(this)">
-
+            <button id="group_vars" class="group-vars-button" onclick="group_vars_window()">Multivariate Statistics</button>
+            <input id="new-transform-box" size=16 style="display:none" type="text" class="transformation-box" placeholder="Name <- Formula" onfocusout="newtransform(this)"> <button type='button' class='manualinfo' data-load-url='psiIntroduction.html' data-toggle='modal' data-target='#myModal' data-id='transformer'><span class='glyphicon glyphicon-question-sign' style='color:"+qmark_color+";font-size:"+qmark_size+";'></span></button>       
         </nav>
        
 
@@ -151,13 +149,13 @@
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <button type="button" class="close" data-dismiss="modal" onclick="edit_window_closed()">&times;</button>
                     <h3 class="modal-title" style="text-align: center;"> <img src="../images/dpr.png" width="200" > PSI (&Psi;): a Private data Sharing Interface</h3>
                 </div>
                 <div class="modal-body">
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal" onclick="edit_window_closed()">Close</button>
                 </div> 
             </div>
         </div>
@@ -204,7 +202,7 @@
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <button type="button" class="close" data-dismiss="modal" onclick="edit_window_closed()">&times;</button>
                     <h3 class="modal-title" style="text-align: center;"> <img src="../images/dpr.png" width="200" > PSI (&Psi;): a Private data Sharing Interface</h3>
                 </div>
                
